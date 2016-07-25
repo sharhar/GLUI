@@ -1,0 +1,4 @@
+class Window {
+public:
+	Window();
+};
