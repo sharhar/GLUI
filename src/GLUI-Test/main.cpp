@@ -1,9 +1,19 @@
 #include <Window.h>
+#include <GLUI.h>
 #include <iostream>
 
 int main() {
-	Window win;
+	glui::GLUI::init();
+
+	glui::Window win("Test", 800, 600);
 	
-	system("PAUSE");
+	while (win.isOpen()) {
+		win.poll();
+	}
+
+	win.destroy();
+
+	glui::GLUI::destroy();
+
 	return 0;
 }
