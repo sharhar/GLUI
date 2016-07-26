@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GLUI/Input.h>
+
 namespace glui {
 	class GLUI {
 	public:
