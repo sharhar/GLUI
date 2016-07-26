@@ -4,6 +4,7 @@
 namespace glui {
 	namespace input {
 		Input* Input::input = 0;
+		std::string* Input::textString = 0;
 
 		void Input::init() {
 			Input::input = new Input();
@@ -32,6 +33,20 @@ namespace glui {
 
 		void callbacks::key(int key, int state) {
 			Input::input->keys[key] = state;
+			if (Input::textString != 0 && key == GLFW_KEY_BACKSPACE && state == GLFW_PRESS && Input::textString->size() != 0) {
+				Input::textString->pop_back();
+			}
+		}
+
+		void callbacks::text(unsigned int codepoint) {
+			if (Input::textString != 0) {
+				char car = (char) codepoint;
+				Input::textString->push_back(car);
+			}
+		}
+
+		void keyboard::setTextCallback(std::string* string) {
+			Input::textString = string;
 		}
 	}
 }

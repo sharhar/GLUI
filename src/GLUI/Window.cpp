@@ -16,6 +16,10 @@ namespace glui {
 		input::callbacks::mouseButton(button, action);
 	}
 
+	static void textCallBack(GLFWwindow* window, unsigned int codepoint) {
+		glui::input::callbacks::text(codepoint);
+	}
+
 	Window::Window(const char* title, int width, int height) {
 		m_width = width;
 		m_height = height;
@@ -25,6 +29,7 @@ namespace glui {
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		glfwSetCursorPosCallback(window, mousePosCallback);
+		glfwSetCharCallback(window, textCallBack);
 		m_window = (void*)window;
 	}
 
