@@ -1,17 +1,20 @@
 #pragma once
 
 #include <string>
+#include <GLUI/GLUI.h>
 
 namespace glui {
 	class Color {
-	private:
-		float m_r, m_g, m_b;
 	public:
-		Color(float r, float g, float b);
+		Color(float a_r, float a_g, float a_b);
+
+		float r, g, b;
 	};
 
 	class Font {
 	public:
 		Font(std::string path);
+
+		void* chars;
 	};
 }

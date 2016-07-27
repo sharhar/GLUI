@@ -7,5 +7,7 @@ namespace glui {
 	public:
 		static void init();
 		static void destroy();
+
+		static void* data;
 	};
 }
