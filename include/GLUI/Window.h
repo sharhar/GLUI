@@ -12,6 +12,7 @@ namespace glui{
 		int getWidth() { return m_width; }
 		int getHeight() { return m_height; }
 		bool isOpen();
+		void swap();
 		void destroy();
 	};
 }

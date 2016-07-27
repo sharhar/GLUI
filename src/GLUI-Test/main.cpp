@@ -2,6 +2,8 @@
 #include <GLUI/GLUI.h>
 #include <GLUI/Input.h>
 #include <GLUI/Listener.h>
+#include <GLUI/Renderer.h>
+#include <GLUI/Utils.h>
 #include <iostream>
 #include <GLFW/glfw3.h>
 
@@ -14,10 +16,19 @@ int main() {
 
 	std::string s = "hi";
 
-	input::keyboard::setTextCallback(&s);
+	//input::keyboard::setTextCallback(&s);
+
+	glEnable(GL_TEXTURE_2D);
+
+	Font* font = new Font("arial.ttf");
+
+	glClearColor(1, 0, 1, 1);
 	
 	while (win.isOpen()) {
 		win.poll();
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		win.swap();
 	}
 
 	win.destroy();

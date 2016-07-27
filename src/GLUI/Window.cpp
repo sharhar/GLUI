@@ -37,6 +37,10 @@ namespace glui {
 		glfwPollEvents();
 	}
 
+	void Window::swap() {
+		glfwSwapBuffers((GLFWwindow*) m_window);
+	}
+
 	bool Window::isOpen() {
 		return !glfwWindowShouldClose((GLFWwindow*) m_window);
 	}
