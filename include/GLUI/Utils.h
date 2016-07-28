@@ -13,8 +13,9 @@ namespace glui {
 
 	class Font {
 	public:
-		Font(std::string path);
+		Font(std::string path, float a_size);
 
 		void* chars;
+		float size;
 	};
 }

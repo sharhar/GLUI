@@ -7,7 +7,7 @@ namespace glui {
 		
 	}
 
-	Font::Font(std::string path) {
+	Font::Font(std::string path, float a_size) {
 		GLUIData* data = (GLUIData*) GLUI::data;
 
 		FT_Face face;
@@ -16,13 +16,16 @@ namespace glui {
 			fprintf(stderr, "Could not open font\n");
 		}
 
-		FT_Set_Pixel_Sizes(face, 0, 64);
+		size = a_size;
+
+		FT_Set_Pixel_Sizes(face, 0, (int)size);
 
 		Character** t_chars = new Character*[127];
 		
-		for (char c = 32; c < 127;c++) {
+		for (char c = 0; c < 127;c++) {
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 				std::cout << "Couldn't load '" << c << "'\n";
+				continue;
 			}
 
 			GLuint tex;

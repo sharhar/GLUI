@@ -9,10 +9,19 @@ namespace glui {
 		Character** chars = (Character**)font->chars;
 
 		float xOff = 0;
+		float yOff = 0;
+
+		float s = scale/font->size;
 
 		glColor3f(color->r, color->g, color->b);
 		for (int i = 0; i < text.size();i++) {
 			char c = text.at(i);
+
+			if (c == '\n') {
+				yOff += scale;
+				xOff = 0;
+				continue;
+			}
 
 			Character* car = chars[c];
 
@@ -20,11 +29,11 @@ namespace glui {
 			
 			glBindTexture(GL_TEXTURE_2D, tex);
 
-			float h = car->sizey * scale;
-			float w = car->sizex * scale;
+			float h = car->sizey * s;
+			float w = car->sizex * s;
 			
-			float x = xOff + posx + car->offx * scale;
-			float y = posy - (car->sizey - car->offy) * scale;
+			float x = xOff + posx + car->offx * s;
+			float y = posy - (car->sizey - car->offy) * s - yOff;
 
 			glBegin(GL_QUADS);
 			glTexCoord2d(0.0, 1.0); glVertex2f(x    , y    );
@@ -33,7 +42,7 @@ namespace glui {
 			glTexCoord2d(1.0, 1.0); glVertex2f(x + w, y    );
 			glEnd();
 
-			xOff += (car->advance >> 6) * scale;
+			xOff += (car->advance >> 6) * s;
 		}
 	}
 }

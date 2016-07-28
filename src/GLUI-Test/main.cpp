@@ -17,12 +17,10 @@ int main() {
 
 	std::string s = "hi";
 
-	//input::keyboard::setTextCallback(&s);
-
 	glEnable(GL_TEXTURE_2D);
 
-	Font* font = new Font("arial.ttf");
-	Color* color = new Color(1, 0, 1);
+	Font* font = new Font("arial.ttf", 32);
+	Color* color = new Color(1, 1, 1);
 
 	glClearColor(0, 0, 0, 1);
 
@@ -37,13 +35,9 @@ int main() {
 
 		double time = glfwGetTime();
 
-		std::string text = "time since launch: " + std::to_string(time);
+		std::string text = "time: " + std::to_string(time);
 
-		color->r = cos(time)/2 + 0.5;
-		color->g = sin(time)/2 + 0.5;
-		color->b = 1;
-
-		Renderer::render(text, 50, 50, 0.75, font, color);
+		Renderer::render(text, 50, 100, 32, font, color);
 
 		win.swap();
 	}
