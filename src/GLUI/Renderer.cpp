@@ -3,12 +3,14 @@
 
 namespace glui {
 	void Renderer::init() {
-		glClearColor(0, 0, 0, 1);
+		glClearColor(0.2f, 0.2f, 0.7f, 1);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0, 800, 0, 600, -1, 1);
 		glMatrixMode(GL_MODELVIEW);
+
+		glEnable(GL_TEXTURE_2D);
 	}
 
 	void Renderer::clear() {
@@ -57,5 +59,7 @@ namespace glui {
 
 			xOff += (car->advance >> 6) * s;
 		}
+
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

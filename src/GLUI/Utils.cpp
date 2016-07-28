@@ -21,7 +21,7 @@ namespace glui {
 		FT_Set_Pixel_Sizes(face, 0, (int)size);
 
 		Character** t_chars = new Character*[127];
-		
+
 		for (char c = 0; c < 127;c++) {
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 				std::cout << "Couldn't load '" << c << "'\n";
