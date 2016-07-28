@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Gl/glew.h>
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <ft2build.h>

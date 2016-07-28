@@ -5,7 +5,6 @@ namespace glui {
 	void* GLUI::data = 0;
 
 	void GLUI::init() {
-		glewInit();
 		glfwInit();
 
 		input::Input::init();

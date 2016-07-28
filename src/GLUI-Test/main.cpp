@@ -22,22 +22,17 @@ int main() {
 	Font* font = new Font("arial.ttf", 32);
 	Color* color = new Color(1, 1, 1);
 
-	glClearColor(0, 0, 0, 1);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, 800, 0, 600, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
+	Renderer::init();
 
 	while (win.isOpen()) {
 		win.poll();
-		glClear(GL_COLOR_BUFFER_BIT);
+		Renderer::clear();
 
 		double time = glfwGetTime();
 
 		std::string text = "time: " + std::to_string(time);
 
-		Renderer::render(text, 50, 100, 32, font, color);
+		Renderer::drawString(text, 50, 100, 32, font, color);
 
 		win.swap();
 	}

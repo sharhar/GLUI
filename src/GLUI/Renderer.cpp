@@ -2,7 +2,20 @@
 #include <GLUI/DONOTINCLUDE.h>
 
 namespace glui {
-	void Renderer::render(const std::string& text, float posx, float posy, float scale, Font* font, Color* color) {
+	void Renderer::init() {
+		glClearColor(0, 0, 0, 1);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, 800, 0, 600, -1, 1);
+		glMatrixMode(GL_MODELVIEW);
+	}
+
+	void Renderer::clear() {
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color* color) {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
