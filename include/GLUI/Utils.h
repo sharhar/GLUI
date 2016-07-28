@@ -4,12 +4,9 @@
 #include <GLUI/GLUI.h>
 
 namespace glui {
-	class Color {
-	public:
-		Color(float a_r, float a_g, float a_b);
-
+	typedef struct Color {
 		float r, g, b;
-	};
+	} Color;
 
 	class Font {
 	public:
@@ -17,5 +14,15 @@ namespace glui {
 
 		void* chars;
 		float size;
+	};
+
+	typedef struct Rectangle {
+		float x, y, w, h;
+	} Rectangle;
+
+	typedef struct TextStyle {
+		float size;
+		Font* font;
+		Color color;
 	};
 }

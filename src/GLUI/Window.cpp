@@ -48,4 +48,8 @@ namespace glui {
 	void Window::destroy() {
 		glfwDestroyWindow((GLFWwindow*) m_window);
 	}
+
+	void* Window::getGLFWwindow() {
+		return m_window;
+	}
 }

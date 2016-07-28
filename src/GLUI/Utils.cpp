@@ -2,11 +2,6 @@
 #include <GLUI/DONOTINCLUDE.h>
 
 namespace glui {
-	Color::Color(float a_r, float a_g, float a_b) : 
-		r(a_r), g(a_g), b(a_b) {
-		
-	}
-
 	Font::Font(std::string path, float a_size) {
 		GLUIData* data = (GLUIData*) GLUI::data;
 

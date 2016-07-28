@@ -14,5 +14,7 @@ namespace glui{
 		bool isOpen();
 		void swap();
 		void destroy();
+
+		void* getGLFWwindow();
 	};
 }
