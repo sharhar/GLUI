@@ -3,8 +3,6 @@
 
 namespace glui {
 	void Renderer::init() {
-		glClearColor(0.2f, 0.2f, 0.7f, 1);
-
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0, 800, 0, 600, -1, 1);
@@ -13,7 +11,8 @@ namespace glui {
 		glEnable(GL_TEXTURE_2D);
 	}
 
-	void Renderer::clear() {
+	void Renderer::clear(Color color) {
+		glClearColor(color.r, color.g, color.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 

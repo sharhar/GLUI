@@ -7,7 +7,7 @@ namespace glui {
 	class Renderer {
 	public:
 		static void init();
-		static void clear();
+		static void clear(Color color);
 		static void drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color* color);
 	};
 }
