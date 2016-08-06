@@ -42,6 +42,7 @@ include_directories(
 	"${CMAKE_SOURCE_DIR}/ext/freetype-2.6/include"
 	"${CMAKE_SOURCE_DIR}/ext/freetype-2.6/devel"
 	"${CMAKE_SOURCE_DIR}/ext/glcorearb"
+	"${CMAKE_SOURCE_DIR}/ext/GLUIExt"
 	"${CMAKE_SOURCE_DIR}/include"
 )
 

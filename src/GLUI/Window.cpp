@@ -1,7 +1,5 @@
-#include <GLUI/Window.h>
-#include <GLUI/Input.h>
-#include <iostream>
-#include <GLFW/glfw3.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {

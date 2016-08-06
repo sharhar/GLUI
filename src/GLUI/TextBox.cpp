@@ -1,6 +1,5 @@
-#include <GLUI/TextBox.h>
-#include <GLUI/Renderer.h>
-#include <GLUI/DONOTINCLUDE.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	TextBox::TextBox(Rectangle rect, TextBoxDescriptor desc) {
@@ -47,7 +46,7 @@ namespace glui {
 		float xOff = 0;
 		float s = m_desc.style.size / m_desc.style.font->size;
 
-		for (int i = 0; i < m_text.size(); i++) {
+		for (unsigned int i = 0; i < m_text.size(); i++) {
 			char c = m_text.at(i);
 
 			Character* car = chars[c];

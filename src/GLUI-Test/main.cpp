@@ -1,33 +1,15 @@
-#include <GLUI/Window.h>
 #include <GLUI/GLUI.h>
-#include <GLUI/Input.h>
-#include <GLUI/Listener.h>
-#include <GLUI/Renderer.h>
-#include <GLUI/Utils.h>
-#include <iostream>
+
 #define GLFW_INCLUDE_GLU
-#include <GLFW/glfw3.h>
-#include <math.h>
-#include <GLUI/Button.h>
-#include <GLUI/TextBox.h>
-#include <GLUI/GLPanel.h>
+#include <GLFW/glfw3.h> //Only for testing, won't be needed when using GLUI
+#include <math.h>		//Only for testing, won't be needed when using GLUI
+#include <iostream>		//Only for testing, won't be needed when using GLUI
 
 using namespace glui;
 
-void renderFunc() {
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.2f, 0.3f, 0.8f, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glPushMatrix();
+GLuint box;
 
-	float rotSpeed = 90;
-
-	glTranslatef(0, 0, -4);
-	glRotatef(glfwGetTime() * rotSpeed, 1, 0, 0);
-	glRotatef(glfwGetTime() * rotSpeed/2, 0, 1, 0);
-	glRotatef(glfwGetTime() * rotSpeed/3, 0, 0, 1);
-
+void cube() {
 	glBegin(GL_QUADS);
 
 	glColor3f(1, 0, 0);
@@ -67,10 +49,6 @@ void renderFunc() {
 	glVertex3f( 1, -1,  1);
 
 	glEnd();
-
-	glPopMatrix();
-
-	glDisable(GL_DEPTH_TEST);
 }
 
 int main() {
@@ -79,6 +57,11 @@ int main() {
 	Window win("GLUI Test", 800, 600);
 
 	Renderer::init(&win);
+
+	box = glGenLists(1);
+	glNewList(box, GL_COMPILE);
+	cube();
+	glEndList();
 
 	Font* font30 = new Font("arial.ttf", 30);
 	
@@ -126,27 +109,45 @@ int main() {
 	TextBox textBox2(rect, tdesc);
 
 	GLPanel panel({ 10, 200, 390, 390 }, layout, 
-		[]() -> void{
+		[]()->void { //Render function
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.2f, 0.3f, 0.8f, 1);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			gluPerspective(80, 1, 0.1, 1000);
-		}
-	, renderFunc);
+			glMatrixMode(GL_MODELVIEW);
+
+			glPushMatrix();
+
+			float rotSpeed = 90;
+
+			glTranslatef(0, 0, -4);
+			glRotatef(glfwGetTime() * rotSpeed, 1, 0, 0);
+			glRotatef(glfwGetTime() * rotSpeed / 2, 0, 1, 0);
+			glRotatef(glfwGetTime() * rotSpeed / 3, 0, 0, 1);
+
+			glCallList(box);
+
+			glPopMatrix();
+
+			glDisable(GL_DEPTH_TEST);
+		});
 
 	while (win.isOpen()) {
 		win.poll();
 
-		Renderer::clear({1, 1, 1});
+		Renderer::clear(color::grey);
 
 		button.poll();
-		button.render();
-		
 		textBox.poll();
-		textBox.render();
-
 		textBox2.poll();
-		textBox2.render();
-
 		panel.poll();
+
+		button.render();
+		textBox.render();
+		textBox2.render();
 		panel.render();
 
 		win.swap();

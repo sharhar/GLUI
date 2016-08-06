@@ -10,7 +10,7 @@ namespace glui {
 		TextStyle style;
 		Layout* layout;
 		func_callBack callBack;
-	};
+	} BasicButtonDescriptor;
 
 	typedef struct ButtonDescriptor {
 		BasicButtonDescriptor basic;
@@ -20,7 +20,7 @@ namespace glui {
 		Color outColor;
 		float outThick;
 		bool out;
-	};
+	} ButtonDescriptor;
 
 	class Button {
 	private:

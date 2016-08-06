@@ -1,4 +1,5 @@
-#include <GLUI/Layout.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	Layout::Layout(Window* window, float width, float height) {

@@ -1,5 +1,5 @@
-#include <GLUI/Renderer.h>
-#include <GLUI/DONOTINCLUDE.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	void Renderer::init(Window* window) {
@@ -28,7 +28,7 @@ namespace glui {
 		float s = scale/font->size;
 
 		glColor3f(color->r, color->g, color->b);
-		for (int i = 0; i < text.size();i++) {
+		for (unsigned int i = 0; i < text.size();i++) {
 			char c = text.at(i);
 
 			if (c == '\n') {

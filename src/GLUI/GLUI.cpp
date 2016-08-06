@@ -1,5 +1,5 @@
 #include <GLUI/GLUI.h>
-#include <GLUI/DONOTINCLUDE.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	void* GLUI::data = 0;

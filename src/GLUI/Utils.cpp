@@ -1,6 +1,5 @@
-#include <GLUI/Utils.h>
 #include <GLUI/GLUI.h>
-#include <GLUI/DONOTINCLUDE.h>
+#include <GLUIExt.h>
 
 namespace glui {
 

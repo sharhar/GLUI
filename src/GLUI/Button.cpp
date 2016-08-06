@@ -1,7 +1,5 @@
-#include <GLUI/Button.h>
-#include <GLUI/DONOTINCLUDE.h>
-#include <GLUI/Input.h>
-#include <GLUI/Renderer.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	Button::Button(Rectangle rect, std::string text, BasicButtonDescriptor desc) :
@@ -22,7 +20,7 @@ namespace glui {
 		m_descriptor.basic = desc;
 		m_descriptor.out = true;
 		m_descriptor.outThick = 3;
-		m_descriptor.outColor = { 0.45f, 0.45f, 0.45f };
+		m_descriptor.outColor = color::darkGrey;
 
 		m_descriptor.ntr = { nt, nt, nt };
 		m_descriptor.ntl = { nt, nt, nt };

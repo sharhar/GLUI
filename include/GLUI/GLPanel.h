@@ -4,16 +4,14 @@
 #include <GLUI/Layout.h>
 
 namespace glui {
-	typedef void(*matrix_func)(void);
-	typedef void(*render_func)(void);
+	typedef void(*glpanel_render_func)(void);
 
 	class GLPanel {
 	private:
 		unsigned int m_FBO;
 		unsigned int m_tex;
 		unsigned int m_dtex;
-		matrix_func m_matrixFunc;
-		render_func m_renderFunc;
+		glpanel_render_func m_renderFunc;
 
 		Rectangle m_rect;
 
@@ -21,7 +19,7 @@ namespace glui {
 
 		void* m_glFuncs;
 	public:
-		GLPanel(Rectangle rect, Layout* layout, matrix_func matrixFunc, render_func renderFunc);
+		GLPanel(Rectangle rect, Layout* layout, glpanel_render_func renderFunc);
 		void poll();
 		void render();
 	};

@@ -1,5 +1,5 @@
-#include <GLUI/GLPanel.h>
-#include <GLUI/DONOTINCLUDE.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 typedef struct GLFuncs {
 	PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
@@ -10,10 +10,9 @@ typedef struct GLFuncs {
 
 namespace glui {
 
-	GLPanel::GLPanel(Rectangle rect, Layout* layout, matrix_func matrixFunc, render_func renderFunc) {
+	GLPanel::GLPanel(Rectangle rect, Layout* layout, glpanel_render_func renderFunc) {
 		m_rect = rect;
 		m_layout = layout;
-		m_matrixFunc = matrixFunc;
 		m_renderFunc = renderFunc;
 
 		GLFuncs* glFuncs = (GLFuncs*)malloc(sizeof(GLFuncs));
@@ -64,10 +63,6 @@ namespace glui {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		((GLFuncs*)m_glFuncs)->glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 		glViewport(0, 0, m_rect.w, m_rect.h);
-
-		glMatrixMode(GL_PROJECTION);
-		m_matrixFunc();
-		glMatrixMode(GL_MODELVIEW);
 
 		m_renderFunc();
 

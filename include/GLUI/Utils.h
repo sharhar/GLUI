@@ -8,10 +8,17 @@ namespace glui {
 	} Color;
 
 	namespace color {
-		static Color black = { 0, 0, 0 };
-		static Color white = { 1, 1, 1 };
-		static Color lightGrey = { 0.75f, 0.75f, 0.75f };
-		static Color darkGrey = { 0.25f, 0.25f, 0.25f };
+		static Color black =			{ 0.00f, 0.00f, 0.00f };
+		static Color white =			{ 1.00f, 1.00f, 1.00f };
+		static Color grey =				{ 0.50f, 0.50f, 0.50f };
+		static Color lightGrey =		{ 0.75f, 0.75f, 0.75f };
+		static Color darkGrey =			{ 0.25f, 0.25f, 0.25f };
+		static Color red =				{ 1.00f, 0.00f, 0.00f };
+		static Color green =			{ 0.00f, 1.00f, 0.00f };
+		static Color blue =				{ 0.00f, 0.00f, 1.00f };
+		static Color yellow =			{ 1.00f, 1.00f, 0.00f };
+		static Color cyan =				{ 0.00f, 1.00f, 1.00f };
+		static Color magenta =			{ 1.00f, 0.00f, 1.00f };
 	}
 
 	class Font {
@@ -34,5 +41,5 @@ namespace glui {
 		float size;
 		Font* font;
 		Color color;
-	};
+	} TextStyle;
 }

@@ -1,5 +1,5 @@
-#include <GLUI/Input.h>
-#include <GLFW/glfw3.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	namespace input {

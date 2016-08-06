@@ -1,4 +1,5 @@
-#include <GLUI/Listener.h>
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
 
 namespace glui {
 	Listener::Listener(func_check check, func_callBack callBack) {
