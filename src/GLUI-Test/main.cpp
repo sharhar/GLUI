@@ -5,10 +5,12 @@
 #include <GLUI/Renderer.h>
 #include <GLUI/Utils.h>
 #include <iostream>
+#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 #include <math.h>
 #include <GLUI/Button.h>
 #include <GLUI/TextBox.h>
+#include <GLUI/GLPanel.h>
 
 using namespace glui;
 
@@ -16,10 +18,76 @@ void func() {
 	std::cout << "pressed!\n";
 }
 
+void matrixFunc() {
+	glLoadIdentity();
+	gluPerspective(80, 1, 0.1, 1000);
+}
+
+void renderFunc() {
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.2f, 0.3f, 0.8f, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glPushMatrix();
+
+	float rotSpeed = 90;
+
+	glTranslatef(0, 0, -4);
+	glRotatef(glfwGetTime() * rotSpeed, 1, 0, 0);
+	glRotatef(glfwGetTime() * rotSpeed/2, 0, 1, 0);
+	glRotatef(glfwGetTime() * rotSpeed/3, 0, 0, 1);
+
+	glBegin(GL_QUADS);
+
+	glColor3f(1, 0, 0);
+	glVertex3f(-1, -1,  1);
+	glVertex3f( 1, -1,  1);
+	glVertex3f( 1,  1,  1);
+	glVertex3f(-1,  1,  1);
+
+	glColor3f(1, 1, 0);
+	glVertex3f(-1, -1,  1);
+	glVertex3f(-1, -1, -1);
+	glVertex3f(-1,  1, -1);
+	glVertex3f(-1,  1,  1);
+
+	glColor3f(0, 1, 0);
+	glVertex3f(-1, -1, -1);
+	glVertex3f( 1, -1, -1);
+	glVertex3f( 1,  1, -1);
+	glVertex3f(-1,  1, -1);
+
+	glColor3f(1, 0, 1);
+	glVertex3f( 1, -1,  1);
+	glVertex3f( 1, -1, -1);
+	glVertex3f( 1,  1, -1);
+	glVertex3f( 1,  1,  1);
+
+	glColor3f(0, 1, 1);
+	glVertex3f(-1,  1,  1);
+	glVertex3f(-1,  1, -1);
+	glVertex3f( 1,  1, -1);
+	glVertex3f( 1,  1,  1);
+
+	glColor3f(0, 0, 1);
+	glVertex3f(-1, -1,  1);
+	glVertex3f(-1, -1, -1);
+	glVertex3f( 1, -1, -1);
+	glVertex3f( 1, -1,  1);
+
+	glEnd();
+
+	glPopMatrix();
+
+	glDisable(GL_DEPTH_TEST);
+}
+
 int main() {
 	GLUI::init();
 
 	Window win("GLUI Test", 800, 600);
+
+	Renderer::init(&win);
 
 	Font* font = new Font("arial.ttf", 30);
 	if (!font->inited()) {
@@ -51,10 +119,11 @@ int main() {
 
 	TextBox textBox2(rect, tdesc);
 
-	Renderer::init(&win);
+	GLPanel panel({10, 200, 390, 390}, layout, matrixFunc, renderFunc);
 
 	while (win.isOpen()) {
 		win.poll();
+
 		Renderer::clear({1, 1, 1});
 
 		button.poll();
@@ -65,6 +134,9 @@ int main() {
 
 		textBox2.poll();
 		textBox2.render();
+
+		panel.poll();
+		panel.render();
 
 		win.swap();
 	}

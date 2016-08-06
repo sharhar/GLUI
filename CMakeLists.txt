@@ -29,10 +29,19 @@ if(NOT MSVC)
 
 endif()
 
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/ext/glcorearb/glcorearb.h")
+	message("Did not find glcorearb.h...")
+	message("Downloading glcorearb.h...")
+	file(DOWNLOAD "https://www.opengl.org/registry/api/GL/glcorearb.h" "${CMAKE_SOURCE_DIR}/ext/glcorearb/glcorearb.h")
+else()
+	message("Found glcorearb.h...")
+endif()
+
 include_directories(
 	"${CMAKE_SOURCE_DIR}/ext/glfw/include"
 	"${CMAKE_SOURCE_DIR}/ext/freetype-2.6/include"
 	"${CMAKE_SOURCE_DIR}/ext/freetype-2.6/devel"
+	"${CMAKE_SOURCE_DIR}/ext/glcorearb"
 	"${CMAKE_SOURCE_DIR}/include"
 )
 

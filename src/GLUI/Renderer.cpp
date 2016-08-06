@@ -9,6 +9,9 @@ namespace glui {
 		glMatrixMode(GL_MODELVIEW);
 
 		glEnable(GL_TEXTURE_2D);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void Renderer::clear(Color color) {
@@ -17,9 +20,6 @@ namespace glui {
 	}
 
 	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color* color) {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
 		Character** chars = (Character**)font->chars;
 
 		float xOff = 0;

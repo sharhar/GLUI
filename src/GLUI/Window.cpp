@@ -35,6 +35,11 @@ namespace glui {
 
 	void Window::poll() {
 		glfwPollEvents();
+
+		GLenum err = GL_NO_ERROR;
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			std::cout << "GLError: " << err << "\n";
+		}
 	}
 
 	void Window::swap() {

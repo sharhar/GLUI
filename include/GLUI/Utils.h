@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <GLUI/GLUI.h>
 
 namespace glui {
 	typedef struct Color {
