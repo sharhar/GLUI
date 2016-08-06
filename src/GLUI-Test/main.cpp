@@ -14,15 +14,6 @@
 
 using namespace glui;
 
-void func() {
-	std::cout << "pressed!\n";
-}
-
-void matrixFunc() {
-	glLoadIdentity();
-	gluPerspective(80, 1, 0.1, 1000);
-}
-
 void renderFunc() {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.2f, 0.3f, 0.8f, 1);
@@ -89,8 +80,19 @@ int main() {
 
 	Renderer::init(&win);
 
-	Font* font = new Font("arial.ttf", 30);
-	if (!font->inited()) {
+	Font* font30 = new Font("arial.ttf", 30);
+	
+	if (!font30->inited()) {
+		win.destroy();
+#if defined(_WIN32) || defined (_WIN64)
+		system("PAUSE");
+#endif
+		return -1;
+	}
+
+	Font* font20 = new Font("arial.ttf", 20);
+
+	if (!font20->inited()) {
 		win.destroy();
 #if defined(_WIN32) || defined (_WIN64)
 		system("PAUSE");
@@ -101,11 +103,15 @@ int main() {
 	Rectangle rect = {100, 100, 100, 50};
 	Layout* layout = new AbsoluteLayout(&win, 800, 600);
 
-	TextStyle buttonText = { 30, font, color::white };
-	TextStyle textBoxText = { 16, font, color::black };
-	BasicButtonDescriptor desc = { buttonText, layout, func };
+	TextStyle buttonText = { 30, font30, color::white };
+	TextStyle textBoxText = { 20, font20, color::black };
+	BasicButtonDescriptor desc = { buttonText, layout, 
+		[]()->void {
+			std::cout << "pressed!\n";
+		} 
+	};
 
-	Button button(rect, "Play", desc);
+	Button button(rect, "Press", desc);
 
 	TextBoxDescriptor tdesc = { textBoxText, layout,  color::lightGrey, color::darkGrey, color::darkGrey, 1, 2 };
 
@@ -119,7 +125,12 @@ int main() {
 
 	TextBox textBox2(rect, tdesc);
 
-	GLPanel panel({10, 200, 390, 390}, layout, matrixFunc, renderFunc);
+	GLPanel panel({ 10, 200, 390, 390 }, layout, 
+		[]() -> void{
+			glLoadIdentity();
+			gluPerspective(80, 1, 0.1, 1000);
+		}
+	, renderFunc);
 
 	while (win.isOpen()) {
 		win.poll();
