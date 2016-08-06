@@ -20,12 +20,13 @@ namespace glui {
 	private:
 		TextBoxDescriptor m_desc;
 		Rectangle m_rect;
-		std::string m_text;
 		float cursorXOff;
 
 		bool m_prevDown;
 		bool m_writting;
 	public:
+		std::string m_text;
+	
 		TextBox(Rectangle rect, TextBoxDescriptor desc);
 
 		void poll();

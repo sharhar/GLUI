@@ -2,6 +2,9 @@
 #include <GLUI/DONOTINCLUDE.h>
 
 namespace glui {
+
+	//Color color::black = {0, 0, 0};
+
 	Font::Font(std::string path, float a_size) {
 		GLUIData* data = (GLUIData*) GLUI::data;
 
@@ -9,6 +12,8 @@ namespace glui {
 		
 		if (FT_New_Face(data->ft, path.c_str(), 0, &face)) {
 			fprintf(stderr, "Could not open font\n");
+			m_inited = false;
+			return;
 		}
 
 		size = a_size;
@@ -65,5 +70,11 @@ namespace glui {
 		}
 
 		chars = (void*)t_chars;
+
+		m_inited = true;
+	}
+
+	bool Font::inited() {
+		return m_inited;
 	}
 }

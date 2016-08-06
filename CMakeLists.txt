@@ -8,6 +8,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(BUILD_GLUI-TEST ON)
+
 find_package(OpenGL REQUIRED)
 
 if(NOT MSVC)
@@ -39,4 +41,8 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/ext/freetype-2.6")
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI")
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI-Test")
+if(BUILD_GLUI-TEST)
+	add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI-Test")
+	
+	file(COPY "${CMAKE_SOURCE_DIR}/arial.ttf" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+endif()

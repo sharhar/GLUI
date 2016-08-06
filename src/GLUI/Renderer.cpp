@@ -2,10 +2,10 @@
 #include <GLUI/DONOTINCLUDE.h>
 
 namespace glui {
-	void Renderer::init() {
+	void Renderer::init(Window* window) {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, 800, 0, 600, -1, 1);
+		glOrtho(0, window->getWidth(), 0, window->getHeight(), -1, 1);
 		glMatrixMode(GL_MODELVIEW);
 
 		glEnable(GL_TEXTURE_2D);

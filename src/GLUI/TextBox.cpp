@@ -6,7 +6,7 @@ namespace glui {
 	TextBox::TextBox(Rectangle rect, TextBoxDescriptor desc) {
 		m_desc = desc;
 		m_rect = rect;
-		m_text = "hi";
+		m_text = "";
 		m_prevDown = false;
 		m_writting = false;
 	}
@@ -27,7 +27,10 @@ namespace glui {
 				input::keyboard::setTextCallback(&m_text);
 				m_writting = true;
 			} else {
-				input::keyboard::setTextCallback(0);
+				if (input::Input::textString == &m_text) {
+					input::keyboard::setTextCallback(0);
+				}
+				
 				m_writting = false;
 			}
 
