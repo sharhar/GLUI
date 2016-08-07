@@ -1,14 +1,12 @@
 #pragma once
 
 #include <GLUI/Utils.h>
-#include <GLUI/Layout.h>
 #include <GLUI/Input.h>
 
 namespace glui {
 
 	typedef struct TextBoxDescriptor {
 		TextStyle style;
-		Layout* layout;
 		Color boxColor;
 		Color outlineColor;
 		Color cursorColor;
@@ -16,10 +14,9 @@ namespace glui {
 		float outLineWidth;
 	} TextBoxDescriptor;
 
-	class TextBox {
+	class TextBox : public GLUIObject {
 	private:
 		TextBoxDescriptor m_desc;
-		Rectangle m_rect;
 		float cursorXOff;
 
 		bool m_prevDown;
@@ -27,9 +24,9 @@ namespace glui {
 	public:
 		std::string m_text;
 	
-		TextBox(Rectangle rect, TextBoxDescriptor desc);
+		TextBox(Rectangle bounds, Layout* layout, TextBoxDescriptor desc);
 
-		void poll();
-		void render();
+		void poll() override;
+		void render() override;
 	};
 }

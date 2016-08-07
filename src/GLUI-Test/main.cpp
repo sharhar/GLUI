@@ -88,28 +88,28 @@ int main() {
 
 	TextStyle buttonText = { 30, font30, color::white };
 	TextStyle textBoxText = { 20, font20, color::black };
-	BasicButtonDescriptor desc = { buttonText, layout, 
+	BasicButtonDescriptor desc = { buttonText, 
 		[]()->void {
 			std::cout << "pressed!\n";
 		} 
 	};
 
-	Button button(rect, "Press", desc);
+	Button button(rect, layout, "Press", desc);
 
-	TextBoxDescriptor tdesc = { textBoxText, layout,  color::lightGrey, color::darkGrey, color::darkGrey, 1, 2 };
+	TextBoxDescriptor tdesc = { textBoxText , color::lightGrey, color::darkGrey, color::darkGrey, 1, 2 };
 
 	rect.h = 30;
 	rect.x = 500;
 	rect.w = 200;
 
-	TextBox textBox(rect, tdesc);
+	TextBox textBox(rect, layout, tdesc);
 
-	rect.y = 300;
+	rect.y = 200;
 
-	TextBox textBox2(rect, tdesc);
+	TextBox textBox2(rect, layout, tdesc);
 
-	GLPanel panel({ 10, 200, 390, 390 }, layout, 
-		[]()->void { //Render function
+	GLPanel panel({ 10, 340, 250, 250 }, layout,
+		[]()->void {
 			glEnable(GL_DEPTH_TEST);
 			glClearColor(0.2f, 0.3f, 0.8f, 1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -118,7 +118,8 @@ int main() {
 			glLoadIdentity();
 			gluPerspective(80, 1, 0.1, 1000);
 			glMatrixMode(GL_MODELVIEW);
-
+		},
+		[]()->void { //Render function
 			glPushMatrix();
 
 			float rotSpeed = 90;
@@ -148,7 +149,12 @@ int main() {
 		button.render();
 		textBox.render();
 		textBox2.render();
-		panel.render();
+
+		panel.setPos({ 10, 340});
+		panel.render();//Render color buffer
+
+		panel.setPos({ 270, 340});
+		panel.renderDepth();//Render depth buffer
 
 		win.swap();
 	}

@@ -10,10 +10,10 @@ typedef struct GLFuncs {
 
 namespace glui {
 
-	GLPanel::GLPanel(Rectangle rect, Layout* layout, glpanel_render_func renderFunc) {
-		m_rect = rect;
-		m_layout = layout;
+	GLPanel::GLPanel(Rectangle bounds, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc) :
+		GLUIObject(bounds,layout){
 		m_renderFunc = renderFunc;
+		m_initGLFunc = initGLFunc;
 
 		GLFuncs* glFuncs = (GLFuncs*)malloc(sizeof(GLFuncs));
 
@@ -34,7 +34,7 @@ namespace glui {
 
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_rect.w, m_rect.h,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_bounds.w, m_bounds.h,
 			0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -44,7 +44,7 @@ namespace glui {
 
 		glGenTextures(1, &dtex);
 		glBindTexture(GL_TEXTURE_2D, dtex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, m_rect.w, m_rect.h,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, m_bounds.w, m_bounds.h,
 			0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -57,22 +57,25 @@ namespace glui {
 		m_FBO = fbo;
 		m_tex = tex;
 		m_dtex = dtex;
+
+		m_glInitList = glGenLists(1);
+		glNewList(m_glInitList, GL_COMPILE);
+		m_initGLFunc();
+		glEndList();
 	}
 
 	void GLPanel::poll() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		((GLFuncs*)m_glFuncs)->glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-		glViewport(0, 0, m_rect.w, m_rect.h);
+		glViewport(0, 0, m_bounds.w, m_bounds.h);
+
+		glCallList(m_glInitList);
 
 		m_renderFunc();
 
 		((GLFuncs*)m_glFuncs)->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, m_layout->getWidth(), m_layout->getHeight());
 
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, m_layout->getWidth(), 0, m_layout->getHeight(), -1, 1);
-		glMatrixMode(GL_MODELVIEW);
+		Renderer::reinit();
 	}
 
 	void GLPanel::render() {
@@ -81,10 +84,25 @@ namespace glui {
 		glColor3f(1, 1, 1);
 
 		glBegin(GL_QUADS);
-		glTexCoord2d(0.0, 1.0); glVertex2f(m_rect.x           , m_rect.y + m_rect.h);
-		glTexCoord2d(1.0, 1.0); glVertex2f(m_rect.x + m_rect.w, m_rect.y + m_rect.h);
-		glTexCoord2d(1.0, 0.0); glVertex2f(m_rect.x + m_rect.w, m_rect.y           );
-		glTexCoord2d(0.0, 0.0); glVertex2f(m_rect.x           , m_rect.y           );
+		glTexCoord2d(0.0, 1.0); glVertex2f(m_bounds.x             , m_bounds.y + m_bounds.h);
+		glTexCoord2d(1.0, 1.0); glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
+		glTexCoord2d(1.0, 0.0); glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y             );
+		glTexCoord2d(0.0, 0.0); glVertex2f(m_bounds.x             , m_bounds.y             );
+		glEnd();
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void GLPanel::renderDepth() {
+		glBindTexture(GL_TEXTURE_2D, m_dtex);
+
+		glColor3f(1, 1, 1);
+
+		glBegin(GL_QUADS);
+		glTexCoord2d(0.0, 1.0); glVertex2f(m_bounds.x             , m_bounds.y + m_bounds.h);
+		glTexCoord2d(1.0, 1.0); glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
+		glTexCoord2d(1.0, 0.0); glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y             );
+		glTexCoord2d(0.0, 0.0); glVertex2f(m_bounds.x             , m_bounds.y             );
 		glEnd();
 
 		glBindTexture(GL_TEXTURE_2D, 0);

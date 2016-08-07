@@ -8,7 +8,6 @@ namespace glui {
 
 	typedef struct BasicButtonDescriptor {
 		TextStyle style;
-		Layout* layout;
 		func_callBack callBack;
 	} BasicButtonDescriptor;
 
@@ -22,10 +21,8 @@ namespace glui {
 		bool out;
 	} ButtonDescriptor;
 
-	class Button {
+	class Button : public GLUIObject {
 	private:
-		Rectangle m_rect;
-
 		std::string m_text;
 		ButtonDescriptor m_descriptor;
 		bool m_prevDown;
@@ -33,9 +30,10 @@ namespace glui {
 		bool m_hovering;
 		bool m_basic;
 	public:
-		Button(Rectangle rect, std::string text, BasicButtonDescriptor desc);
+		Button(Rectangle bounds, Layout* layout, std::string text, BasicButtonDescriptor desc);
+		Button(Rectangle bounds, Layout* layout, std::string text, ButtonDescriptor desc);
 
-		void poll();
-		void render();
+		void poll() override;
+		void render() override;
 	};
 }

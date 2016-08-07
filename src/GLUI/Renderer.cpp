@@ -2,16 +2,30 @@
 #include <GLUIExt.h>
 
 namespace glui {
+	unsigned int Renderer::glInitList = 0;
+
 	void Renderer::init(Window* window) {
+		glInitList = glGenLists(1);
+		glNewList(glInitList, GL_COMPILE_AND_EXECUTE);
+
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0, window->getWidth(), 0, window->getHeight(), -1, 1);
 		glMatrixMode(GL_MODELVIEW);
 
+		glViewport(0, 0, window->getWidth(), window->getHeight());
+
 		glEnable(GL_TEXTURE_2D);
 
+		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEndList();
+	}
+
+	void Renderer::reinit() {
+		glCallList(glInitList);
 	}
 
 	void Renderer::clear(Color color) {

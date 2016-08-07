@@ -2,8 +2,8 @@
 #include <GLUIExt.h>
 
 namespace glui {
-	Button::Button(Rectangle rect, std::string text, BasicButtonDescriptor desc) :
-		m_rect(rect) {
+	Button::Button(Rectangle bounds, Layout* layout, std::string text, BasicButtonDescriptor desc) :
+		GLUIObject(bounds, layout) {
 		m_prevDown = false;
 		m_down = false;
 		m_hovering = false;
@@ -38,16 +38,25 @@ namespace glui {
 		m_descriptor.dbl = { dd, dd, dd };
 	}
 
+	Button::Button(Rectangle bounds, Layout* layout, std::string text, ButtonDescriptor desc) :
+		GLUIObject(bounds, layout) {
+		m_prevDown = false;
+		m_down = false;
+		m_hovering = false;
+		m_text = text;
+		m_descriptor = desc;
+	}
+
 	void Button::poll() {
-		float posx = input::Input::input->mousePosx * m_descriptor.basic.layout->getScaleX();
-		float posy = input::Input::input->mousePosy * m_descriptor.basic.layout->getScaleY();
+		float posx = input::Input::input->mousePosx * m_layout->getScaleX();
+		float posy = input::Input::input->mousePosy * m_layout->getScaleY();
 
 		bool down = input::Input::input->mouseLeftDown;
 
-		m_hovering = posx >= m_rect.x &&
-			posx <= m_rect.x + m_rect.w &&
-			m_descriptor.basic.layout->getHeight() - posy >= m_rect.y &&
-			m_descriptor.basic.layout->getHeight() - posy <= m_rect.y + m_rect.h;
+		m_hovering = posx >= m_bounds.x &&
+			posx <= m_bounds.x + m_bounds.w &&
+			m_layout->getHeight() - posy >= m_bounds.y &&
+			m_layout->getHeight() - posy <= m_bounds.y + m_bounds.h;
 
 		if (down && !m_prevDown) {
 			
@@ -84,24 +93,24 @@ namespace glui {
 		glBegin(GL_QUADS);
 		if (m_descriptor.out) {
 			glColor3f(m_descriptor.outColor.r, m_descriptor.outColor.g, m_descriptor.outColor.b);
-			glVertex2f(m_rect.x - m_descriptor.outThick, m_rect.y - m_descriptor.outThick);
-			glVertex2f(m_rect.x - m_descriptor.outThick, m_rect.y + m_rect.h + m_descriptor.outThick);
-			glVertex2f(m_rect.x + m_rect.w + m_descriptor.outThick, m_rect.y + m_rect.h + m_descriptor.outThick);
-			glVertex2f(m_rect.x + m_rect.w + m_descriptor.outThick, m_rect.y - m_descriptor.outThick);
+			glVertex2f(m_bounds.x - m_descriptor.outThick, m_bounds.y - m_descriptor.outThick);
+			glVertex2f(m_bounds.x - m_descriptor.outThick, m_bounds.y + m_bounds.h + m_descriptor.outThick);
+			glVertex2f(m_bounds.x + m_bounds.w + m_descriptor.outThick, m_bounds.y + m_bounds.h + m_descriptor.outThick);
+			glVertex2f(m_bounds.x + m_bounds.w + m_descriptor.outThick, m_bounds.y - m_descriptor.outThick);
 		}
 		
 		glColor3f(bl.r, bl.g, bl.b);
-		glVertex2f(m_rect.x, m_rect.y);
+		glVertex2f(m_bounds.x, m_bounds.y);
 		glColor3f(tl.r, tl.g, tl.b);
-		glVertex2f(m_rect.x, m_rect.y + m_rect.h);
+		glVertex2f(m_bounds.x, m_bounds.y + m_bounds.h);
 		glColor3f(tr.r, tr.g, tr.b);
-		glVertex2f(m_rect.x + m_rect.w, m_rect.y + m_rect.h);
+		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
 		glColor3f(br.r, br.g, br.b);
-		glVertex2f(m_rect.x + m_rect.w, m_rect.y);
+		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y);
 		glEnd();
 
-		float off = (m_rect.h - m_descriptor.basic.style.size)/2.0f;
+		float off = (m_bounds.h - m_descriptor.basic.style.size)/2.0f;
 
-		Renderer::drawString(m_text, m_rect.x + off, m_rect.y + off*1.5f, m_descriptor.basic.style.size, m_descriptor.basic.style.font, &(m_descriptor.basic.style.color));
+		Renderer::drawString(m_text, m_bounds.x + off, m_bounds.y + off*1.5f, m_descriptor.basic.style.size, m_descriptor.basic.style.font, &(m_descriptor.basic.style.color));
 	}
 }

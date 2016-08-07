@@ -6,10 +6,10 @@ namespace glui {
 	//Color color::black = {0, 0, 0};
 
 	Font::Font(std::string path, float a_size) {
-		GLUIData* data = (GLUIData*) GLUI::data;
+		GLUIData* data = (GLUIData*)GLUI::data;
 
 		FT_Face face;
-		
+
 		if (FT_New_Face(data->ft, path.c_str(), 0, &face)) {
 			fprintf(stderr, "Could not open font\n");
 			m_inited = false;
@@ -22,7 +22,7 @@ namespace glui {
 
 		Character** t_chars = new Character*[127];
 
-		for (char c = 0; c < 127;c++) {
+		for (char c = 0; c < 127; c++) {
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 				std::cout << "Couldn't load '" << c << "'\n";
 				continue;
@@ -32,8 +32,8 @@ namespace glui {
 			glGenTextures(1, &tex);
 			glBindTexture(GL_TEXTURE_2D, tex);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F); //0x812F is the value of GL_CLAMP_TO_EDGE, part of opengl 1.2
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F); //0x812F is the value of GL_CLAMP_TO_EDGE, part of opengl 1.2
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -54,7 +54,7 @@ namespace glui {
 				GL_ALPHA,
 				GL_UNSIGNED_BYTE,
 				face->glyph->bitmap.buffer
-			);
+				);
 
 			Character* car = (Character*)malloc(sizeof(Character));
 
@@ -76,5 +76,20 @@ namespace glui {
 
 	bool Font::inited() {
 		return m_inited;
+	}
+
+	GLUIObject::GLUIObject(Rectangle bounds, Layout* layout) {
+		m_bounds = bounds;
+		m_layout = layout;
+	}
+
+	void GLUIObject::setPos(Vector2f pos) {
+		m_bounds.x = pos.x;
+		m_bounds.y = pos.y;
+	}
+	
+	void GLUIObject::setSize(Vector2f size) {
+		m_bounds.w = size.x;
+		m_bounds.h = size.y;
 	}
 }
