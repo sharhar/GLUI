@@ -24,6 +24,9 @@ namespace glui {
 		bool m_writting;
 		bool m_isActive;
 
+		bool m_renderCursor;
+		double m_time;
+
 		unsigned char* m_prevKeys;
 	public:
 		std::string m_text;
