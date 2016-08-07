@@ -1,9 +1,10 @@
 #include <GLUI/GLUI.h>
 
+//Only for testing, won't be needed when using GLUI
 #define GLFW_INCLUDE_GLU
-#include <GLFW/glfw3.h> //Only for testing, won't be needed when using GLUI
-#include <math.h>		//Only for testing, won't be needed when using GLUI
-#include <iostream>		//Only for testing, won't be needed when using GLUI
+#include <GLFW/glfw3.h>  
+#include <math.h>		 
+#include <iostream>		 
 
 using namespace glui;
 
@@ -132,8 +133,6 @@ int main() {
 			glCallList(box);
 
 			glPopMatrix();
-
-			glDisable(GL_DEPTH_TEST);
 		});
 
 	while (win.isOpen()) {

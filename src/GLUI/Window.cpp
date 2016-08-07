@@ -24,6 +24,9 @@ namespace glui {
 
 		GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
 		glfwMakeContextCurrent(window);
+
+		glfwSwapInterval(1);
+
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		glfwSetCursorPosCallback(window, mousePosCallback);
