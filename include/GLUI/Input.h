@@ -1,10 +1,5 @@
 #pragma once
 
-#ifdef __APPLE__
-#include <stdlib.h>
-#else
-#include <malloc.h>
-#endif
 #include <string>
 
 namespace glui {
@@ -12,12 +7,12 @@ namespace glui {
 		class Input {
 		public:
 			static void init();
-			static Input* input;
 			static std::string* textString;
-			int* keys;
-			int mousePosx;
-			int mousePosy;
-			bool mouseLeftDown;
+			static size_t textInsertPoint;
+			static unsigned char* keys;
+			static int mousePosx;
+			static int mousePosy;
+			static bool mouseLeftDown;
 		};
 
 		namespace callbacks{
@@ -29,6 +24,7 @@ namespace glui {
 
 		namespace keyboard {
 			void setTextCallback(std::string* string);
+			void setTextInsertPoint(size_t index);
 		}
 
 		namespace mouse {

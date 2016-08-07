@@ -17,10 +17,14 @@ namespace glui {
 	class TextBox : public GLUIObject {
 	private:
 		TextBoxDescriptor m_desc;
-		float cursorXOff;
+		size_t m_cursorPos;
+		size_t m_prevTextSize;
 
 		bool m_prevDown;
 		bool m_writting;
+		bool m_isActive;
+
+		unsigned char* m_prevKeys;
 	public:
 		std::string m_text;
 	

@@ -48,10 +48,10 @@ namespace glui {
 	}
 
 	void Button::poll() {
-		float posx = input::Input::input->mousePosx * m_layout->getScaleX();
-		float posy = input::Input::input->mousePosy * m_layout->getScaleY();
+		float posx = input::Input::mousePosx * m_layout->getScaleX();
+		float posy = input::Input::mousePosy * m_layout->getScaleY();
 
-		bool down = input::Input::input->mouseLeftDown;
+		bool down = input::Input::mouseLeftDown;
 
 		m_hovering = posx >= m_bounds.x &&
 			posx <= m_bounds.x + m_bounds.w &&

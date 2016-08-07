@@ -126,7 +126,7 @@ int main() {
 			float rotSpeed = 90;
 
 			glTranslatef(0, 0, -4);
-			glRotatef(glfwGetTime() * rotSpeed, 1, 0, 0);
+			glRotatef(glfwGetTime() * rotSpeed / 1, 1, 0, 0);
 			glRotatef(glfwGetTime() * rotSpeed / 2, 0, 1, 0);
 			glRotatef(glfwGetTime() * rotSpeed / 3, 0, 0, 1);
 

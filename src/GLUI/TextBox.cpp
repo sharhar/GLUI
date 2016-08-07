@@ -8,35 +8,65 @@ namespace glui {
 		m_text = "";
 		m_prevDown = false;
 		m_writting = false;
+		m_isActive = false;
+		m_cursorPos = 0;
+		m_prevTextSize = 0;
+
+		m_prevKeys = new unsigned char[GLFW_KEY_LAST];
+		memset(m_prevKeys, 0, sizeof(unsigned char) * GLFW_KEY_LAST);
 	}
 
 	void TextBox::poll() {
-		float posx = input::Input::input->mousePosx * m_layout->getScaleX();
-		float posy = input::Input::input->mousePosy * m_layout->getScaleY();
+		float posx = input::Input::mousePosx * m_layout->getScaleX();
+		float posy = input::Input::mousePosy * m_layout->getScaleY();
 
-		bool down = input::Input::input->mouseLeftDown;
+		bool down = input::Input::mouseLeftDown;
 
 		bool hovering = posx >= m_bounds.x &&
 			posx <= m_bounds.x + m_bounds.w &&
 			m_layout->getHeight() - posy >= m_bounds.y &&
 			m_layout->getHeight() - posy <= m_bounds.y + m_bounds.h;
 
+		m_isActive = input::Input::textString == &m_text;
+
 		if (down && !m_prevDown) {
 			if (hovering) {
 				input::keyboard::setTextCallback(&m_text);
+				input::keyboard::setTextInsertPoint(m_cursorPos);
 				m_writting = true;
-			} else {
-				if (input::Input::textString == &m_text) {
+				m_isActive = true;
+			}
+			else {
+				if (m_isActive) {
 					input::keyboard::setTextCallback(0);
 				}
-				
+
 				m_writting = false;
 			}
 
 			m_prevDown = true;
-		} else if (!down && m_prevDown) {
+		}
+		else if (!down && m_prevDown) {
 			m_prevDown = false;
 		}
+
+		if (m_isActive) {
+			input::keyboard::setTextInsertPoint(m_cursorPos);
+		}
+
+		size_t sizeOff = m_text.size() - m_prevTextSize;
+		m_cursorPos += sizeOff;
+		m_prevTextSize = m_text.size();
+
+		if (input::Input::keys[GLFW_KEY_LEFT] && !m_prevKeys[GLFW_KEY_LEFT] && m_isActive && m_text.size() > 0) {
+			m_cursorPos -= 1;
+		}
+
+		if (input::Input::keys[GLFW_KEY_RIGHT] && !m_prevKeys[GLFW_KEY_RIGHT] && m_isActive && m_text.size() > m_cursorPos) {
+			m_cursorPos += 1;
+		}
+
+		memcpy(m_prevKeys, input::Input::keys, sizeof(unsigned char)*GLFW_KEY_LAST);
 	}
 
 	void TextBox::render() {
@@ -47,6 +77,10 @@ namespace glui {
 		float s = m_desc.style.size / m_desc.style.font->size;
 
 		for (unsigned int i = 0; i < m_text.size(); i++) {
+			if (m_cursorPos <= i) {
+				break;
+			}
+
 			char c = m_text.at(i);
 
 			Character* car = chars[c];
@@ -58,25 +92,27 @@ namespace glui {
 
 		//render text box
 		glBegin(GL_QUADS);
+		//Render the outline
 		glColor3f(m_desc.outlineColor.r, m_desc.outlineColor.g, m_desc.outlineColor.b);
 		glVertex2f(m_bounds.x - m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineWidth, m_bounds.y + m_bounds.h + m_desc.outLineWidth);
 		glVertex2f(m_bounds.x - m_desc.outLineWidth, m_bounds.y + m_bounds.h + m_desc.outLineWidth);
 
+		//Render the textbox
 		glColor3f(m_desc.boxColor.r, m_desc.boxColor.g, m_desc.boxColor.b);
 		glVertex2f(m_bounds.x, m_bounds.y);
 		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y);
 		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
 		glVertex2f(m_bounds.x, m_bounds.y + m_bounds.h);
 
+		//Render the cursor
 		glColor3f(m_desc.cursorColor.r, m_desc.cursorColor.g, m_desc.cursorColor.b);
 		glVertex2f(m_bounds.x + m_desc.outLineWidth + xOff,		m_bounds.y + m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_desc.outLineWidth + m_desc.cursorWidth + xOff,		m_bounds.y + m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_desc.outLineWidth + m_desc.cursorWidth + xOff,		m_bounds.y + m_bounds.h - m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_desc.outLineWidth + xOff,		m_bounds.y + m_bounds.h - m_desc.outLineWidth);
 		glEnd();
-
 		
 		//render text
 		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff, m_desc.style.size, m_desc.style.font, &(m_desc.style.color));
