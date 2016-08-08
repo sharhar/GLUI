@@ -11,6 +11,7 @@
 #include <GLUI/Window.h>
 
 namespace glui {
+
 	class GLUI {
 	public:
 		static void init();

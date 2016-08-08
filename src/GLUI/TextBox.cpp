@@ -81,7 +81,7 @@ namespace glui {
 
 		memcpy(m_prevKeys, input::Input::keys, sizeof(unsigned char)*GLFW_KEY_LAST);
 
-		if (m_isActive && glfwGetTime() - m_time >= 0.75) {
+		if (m_isActive && glfwGetTime() - m_time >= 0.55) {
 			m_renderCursor = !m_renderCursor;
 			m_time = glfwGetTime();
 		}

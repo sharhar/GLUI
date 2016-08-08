@@ -1,9 +1,12 @@
 #pragma once
 
+struct GLFWwindow;
+
 namespace glui{
+
 	class Window {
 	private:
-		void* m_window;
+		GLFWwindow* m_window;
 		int m_width;
 		int m_height;
 	public:

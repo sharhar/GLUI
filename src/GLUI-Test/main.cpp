@@ -148,12 +148,7 @@ int main() {
 		button.render();
 		textBox.render();
 		textBox2.render();
-
-		panel.setPos({ 10, 340});
-		panel.render();//Render color buffer
-
-		panel.setPos({ 270, 340});
-		panel.renderDepth();//Render depth buffer
+		panel.render();
 
 		win.swap();
 	}

@@ -8,9 +8,8 @@
 
 typedef struct GLUIData {
 	FT_Library ft;
-	GLuint texVAO, texVBO;
-	GLint texColorLoc;
 } GLUIData;
+
 
 typedef struct Character {
 	GLuint tex;

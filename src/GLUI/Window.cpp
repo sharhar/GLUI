@@ -31,7 +31,7 @@ namespace glui {
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		glfwSetCursorPosCallback(window, mousePosCallback);
 		glfwSetCharCallback(window, textCallBack);
-		m_window = (void*)window;
+		m_window = window;
 	}
 
 	void Window::poll() {
@@ -44,15 +44,15 @@ namespace glui {
 	}
 
 	void Window::swap() {
-		glfwSwapBuffers((GLFWwindow*) m_window);
+		glfwSwapBuffers(m_window);
 	}
 
 	bool Window::isOpen() {
-		return !glfwWindowShouldClose((GLFWwindow*) m_window);
+		return !glfwWindowShouldClose(m_window);
 	}
 
 	void Window::destroy() {
-		glfwDestroyWindow((GLFWwindow*) m_window);
+		glfwDestroyWindow(m_window);
 	}
 
 	void* Window::getGLFWwindow() {
