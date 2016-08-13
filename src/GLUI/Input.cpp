@@ -43,6 +43,7 @@ namespace glui {
 				char* insertion = new char[1];
 				insertion[0] = (char) codepoint;
 				Input::textString->insert(Input::textInsertPoint, std::string(insertion));
+				delete[] insertion;
 			}
 		}
 
