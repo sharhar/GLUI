@@ -40,8 +40,9 @@ namespace glui {
 
 		void callbacks::text(unsigned int codepoint) {
 			if (Input::textString != 0) {
-				char car = (char) codepoint;
-				Input::textString->insert(Input::textInsertPoint, std::string(&car));
+				char* insertion = new char[1];
+				insertion[0] = (char) codepoint;
+				Input::textString->insert(Input::textInsertPoint, std::string(insertion));
 			}
 		}
 
