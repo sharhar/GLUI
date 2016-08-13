@@ -53,6 +53,4 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI")
 
 if(BUILD_GLUI-TEST)
 	add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI-Test")
-	
-	file(COPY "${CMAKE_SOURCE_DIR}/arial.ttf" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 endif()
