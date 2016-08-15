@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GLUI/Button.h>
+#include <GLUI/CheckBox.h>
 #include <GLUI/GLPanel.h>
 #include <GLUI/Input.h>
 #include <GLUI/Layout.h>

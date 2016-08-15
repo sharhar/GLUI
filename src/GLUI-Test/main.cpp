@@ -135,6 +135,16 @@ int main() {
 			glPopMatrix();
 		});
 
+	CheckBoxDescriptor checkBoxDesc = { 
+		{ 30, font30, color::black }, 
+		color::lightGrey, 
+		3, 
+		color::darkGrey, 
+		color::black
+	};
+
+	CheckBox checkBox({100, 200, 30, 30}, layout, "Hello", checkBoxDesc);
+
 	while (win.isOpen()) {
 		win.poll();
 
@@ -144,11 +154,13 @@ int main() {
 		textBox.poll();
 		textBox2.poll();
 		panel.poll();
+		checkBox.poll();
 
 		button.render();
 		textBox.render();
 		textBox2.render();
 		panel.render();
+		checkBox.render();
 
 		win.swap();
 	}

@@ -1,0 +1,82 @@
+#include <GLUI/GLUI.h>
+#include <GLUIExt.h>
+
+namespace glui {
+	CheckBox::CheckBox(Rectangle bounds, Layout* layout, std::string text, CheckBoxDescriptor desc)  :
+		GLUIObject(bounds,layout){
+		m_text = text;
+		m_desc = desc;
+		m_checked = true;
+		m_prevDown = false;
+	}
+
+	void CheckBox::poll() {
+		float posx = input::Input::mousePosx * m_layout->getScaleX();
+		float posy = input::Input::mousePosy * m_layout->getScaleY();
+
+		bool down = input::Input::mouseLeftDown;
+
+		bool hovering = posx >= m_bounds.x &&
+			posx <= m_bounds.x + m_bounds.w &&
+			m_layout->getHeight() - posy >= m_bounds.y &&
+			m_layout->getHeight() - posy <= m_bounds.y + m_bounds.h;
+
+		if (down && !m_prevDown) {
+			if (hovering) {
+				m_checked = !m_checked;
+			}
+
+			m_prevDown = true;
+		} else if (!down && m_prevDown) {
+			m_prevDown = false;
+		}
+	}
+
+	void CheckBox::render() {
+		glBegin(GL_QUADS);
+
+		glColor3f(m_desc.outlineColor.r, m_desc.outlineColor.g, m_desc.outlineColor.b);
+		
+		glVertex2f(m_bounds.x              - m_desc.outLineThickness, m_bounds.y              - m_desc.outLineThickness);
+		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineThickness, m_bounds.y              - m_desc.outLineThickness);
+		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineThickness, m_bounds.y + m_bounds.h + m_desc.outLineThickness);
+		glVertex2f(m_bounds.x              - m_desc.outLineThickness, m_bounds.y + m_bounds.h + m_desc.outLineThickness);
+
+		glColor3f(m_desc.boxColor.r, m_desc.boxColor.g, m_desc.boxColor.b);
+		
+		glVertex2f(m_bounds.x             , m_bounds.y             );
+		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y             );
+		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
+		glVertex2f(m_bounds.x             , m_bounds.y + m_bounds.h);
+
+		glEnd();
+
+		glPushMatrix();
+
+		glTranslatef(m_bounds.x + m_bounds.w/2.0f, m_bounds.y + m_bounds.h/2.0f, 0);
+
+		glRotatef(-45, 0, 0, 1);
+
+		glBegin(GL_QUADS);
+
+		if(m_checked) {
+			glColor3f(m_desc.checkColor.r, m_desc.checkColor.g, m_desc.checkColor.b);
+		
+			glVertex2f(               0     , -m_bounds.h/2.0f + m_bounds.h/15.0f);
+			glVertex2f( m_bounds.w/15.0f * 2, -m_bounds.h/2.0f + m_bounds.h/15.0f);
+			glVertex2f( m_bounds.w/15.0f * 2,  m_bounds.h/2.0f - m_bounds.h/15.0f);
+			glVertex2f(               0     ,  m_bounds.h/2.0f - m_bounds.h/15.0f);
+
+			glVertex2f(-m_bounds.w/15.0f * 3, -m_bounds.h/2.0f + m_bounds.h/15.0f    );
+			glVertex2f( m_bounds.w/15.0f    , -m_bounds.h/2.0f + m_bounds.h/15.0f    );
+			glVertex2f( m_bounds.w/15.0f    , -m_bounds.h/2.0f + m_bounds.h/15.0f * 3);
+			glVertex2f(-m_bounds.w/15.0f * 3, -m_bounds.h/2.0f + m_bounds.h/15.0f * 3);
+		}
+
+		glEnd();
+
+		glPopMatrix();
+
+		Renderer::drawString(m_text, m_bounds.x + m_bounds.w + m_desc.outLineThickness + 3, m_bounds.y + m_desc.textStyle.size/10.0f, m_desc.textStyle.size, m_desc.textStyle.font, &(m_desc.textStyle.color));
+	}
+}
