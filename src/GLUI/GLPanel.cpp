@@ -15,10 +15,11 @@ namespace glui {
 #define glFramebufferTexture m_glFuncs->glFramebufferTexture
 #define glCheckFramebufferStatus m_glFuncs->glCheckFramebufferStatus
 
-	GLPanel::GLPanel(Rectangle bounds, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc) :
+	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc) :
 		GLUIObject(bounds,layout){
 		m_renderFunc = renderFunc;
 		m_initGLFunc = initGLFunc;
+		m_fboSize = fboSize;
 
 		m_glFuncs = (GLFuncs*)malloc(sizeof(GLFuncs));
 
@@ -37,7 +38,7 @@ namespace glui {
 
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_bounds.w, m_bounds.h,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_fboSize.x, m_fboSize.y,
 			0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -47,7 +48,7 @@ namespace glui {
 
 		glGenTextures(1, &dtex);
 		glBindTexture(GL_TEXTURE_2D, dtex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, m_bounds.w, m_bounds.h,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, m_fboSize.x, m_fboSize.y,
 			0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -70,7 +71,7 @@ namespace glui {
 	void GLPanel::poll() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-		glViewport(0, 0, m_bounds.w, m_bounds.h);
+		glViewport(0, 0, m_fboSize.x, m_fboSize.y);
 
 		glCallList(m_glInitList);
 

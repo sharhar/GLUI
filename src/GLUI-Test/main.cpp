@@ -109,8 +109,8 @@ int main() {
 
 	TextBox textBox2(rect, layout, tdesc);
 
-	GLPanel panel({ 10, 340, 250, 250 }, layout,
-		[]()->void {
+	GLPanel panel({ 10, 290, 300, 300 }, {300, 300}, layout,
+		[]()->void { //Init gl function
 			glEnable(GL_DEPTH_TEST);
 			glClearColor(0.2f, 0.3f, 0.8f, 1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,7 +123,7 @@ int main() {
 		[]()->void { //Render function
 			glPushMatrix();
 
-			float rotSpeed = 90;
+			float rotSpeed = 30;
 
 			glTranslatef(0, 0, -4);
 			glRotatef(glfwGetTime() * rotSpeed / 1, 1, 0, 0);
@@ -140,10 +140,11 @@ int main() {
 		color::lightGrey, 
 		3, 
 		color::darkGrey, 
-		color::black
+		color::black,
+		false
 	};
 
-	CheckBox checkBox({100, 200, 30, 30}, layout, "Hello", checkBoxDesc);
+	CheckBox checkBox({100, 200, 30, 30}, layout, "toggle", checkBoxDesc);
 
 	while (win.isOpen()) {
 		win.poll();

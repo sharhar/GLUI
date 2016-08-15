@@ -12,6 +12,7 @@ namespace glui {
 		float outLineThickness;
 		Color outlineColor;
 		Color checkColor;
+		bool checkedAtStart;
 	} CheckBoxDescriptor;
 
 	class CheckBox : public GLUIObject {

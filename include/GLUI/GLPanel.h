@@ -19,8 +19,10 @@ namespace glui {
 		glpanel_init_gl_func m_initGLFunc;
 
 		GLFuncs* m_glFuncs;
+
+		Vector2f m_fboSize;
 	public:
-		GLPanel(Rectangle bounds, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc);
+		GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc);
 		void poll() override;
 		void render() override;
 		void renderDepth();

@@ -22,6 +22,8 @@ namespace glui {
 		m_width = width;
 		m_height = height;
 
+		glfwWindowHint(GLFW_SAMPLES, 4);
+
 		GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
 		glfwMakeContextCurrent(window);
 

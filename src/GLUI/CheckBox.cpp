@@ -6,7 +6,7 @@ namespace glui {
 		GLUIObject(bounds,layout){
 		m_text = text;
 		m_desc = desc;
-		m_checked = true;
+		m_checked = desc.checkedAtStart;
 		m_prevDown = false;
 	}
 
@@ -55,7 +55,7 @@ namespace glui {
 
 		glTranslatef(m_bounds.x + m_bounds.w/2.0f, m_bounds.y + m_bounds.h/2.0f, 0);
 
-		glRotatef(-45, 0, 0, 1);
+		glRotatef(-30, 0, 0, 1);
 
 		glBegin(GL_QUADS);
 
@@ -67,10 +67,10 @@ namespace glui {
 			glVertex2f( m_bounds.w/15.0f * 2,  m_bounds.h/2.0f - m_bounds.h/15.0f);
 			glVertex2f(               0     ,  m_bounds.h/2.0f - m_bounds.h/15.0f);
 
-			glVertex2f(-m_bounds.w/15.0f * 3, -m_bounds.h/2.0f + m_bounds.h/15.0f    );
-			glVertex2f( m_bounds.w/15.0f    , -m_bounds.h/2.0f + m_bounds.h/15.0f    );
-			glVertex2f( m_bounds.w/15.0f    , -m_bounds.h/2.0f + m_bounds.h/15.0f * 3);
-			glVertex2f(-m_bounds.w/15.0f * 3, -m_bounds.h/2.0f + m_bounds.h/15.0f * 3);
+			glVertex2f(-m_bounds.w/15.0f * 3.5f, -m_bounds.h/2.0f + m_bounds.h/15.0f     + m_bounds.h / 20.0f);
+			glVertex2f( m_bounds.w/15.0f       , -m_bounds.h/2.0f + m_bounds.h/15.0f                         );
+			glVertex2f( m_bounds.w/15.0f       , -m_bounds.h/2.0f + m_bounds.h/15.0f * 3                     );
+			glVertex2f(-m_bounds.w/15.0f * 3.5f, -m_bounds.h/2.0f + m_bounds.h/15.0f * 3 + m_bounds.h / 20.0f);
 		}
 
 		glEnd();

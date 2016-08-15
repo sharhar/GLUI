@@ -16,6 +16,7 @@ namespace glui {
 		glViewport(0, 0, window->getWidth(), window->getHeight());
 
 		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_MULTISAMPLE);
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
