@@ -23,10 +23,10 @@ install:
 
 script:
   - cd ..
-  - wget ‐‐output-document=cmake.tar.gz https://cmake.org/files/v2.8/cmake-2.8.12-Linux-i386.tar.gz
-  - tar xvzf cmake.tar.gz
+  - wget https://cmake.org/files/v2.8/cmake-2.8.12-Linux-i386.tar.gz
+  - tar xvzf cmake-2.8.12-Linux-i386.tar.gz
   - cd GLUI
   - mkdir build/
   - cd build/
-  - ../cmake/bin/cmake ..
+  - ../cmake-2.8.12-Linux-i386/bin/cmake ..
   - make
