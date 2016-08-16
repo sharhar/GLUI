@@ -23,14 +23,10 @@ install:
 
 script:
   - cd ..
-  - git clone https://github.com/Kitware/CMake.git
-  - cd CMake
-  - ./configure
-  - make
-  - sudo make install
-  - cd ..
+  - wget ‐‐output-document=cmake.tar.gz https://cmake.org/files/v2.8/cmake-2.8.12-Linux-i386.tar.gz
+  - tar xvzf cmake.tar.gz
   - cd GLUI
   - mkdir build/
   - cd build/
-  - cmake ..
+  - ../cmake/bin/cmake ..
   - make
