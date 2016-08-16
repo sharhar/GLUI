@@ -1,0 +1,30 @@
+sudo: false
+language: cpp
+
+notifications:
+  email: false
+
+os:
+  - linux
+  
+compiler:
+  - gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - kalakris-cmake #for newer cmake
+    packages:
+      - gcc-4.8
+      - g++-4.8
+      - cmake
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+
+script:
+  - mkdir build/
+  - cd build/
+  - cmake ..
+  - make
