@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 language: cpp
 
 notifications:
@@ -14,16 +14,17 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - kalakris-cmake #for newer cmake
     packages:
       - gcc-4.8
       - g++-4.8
-      - cmake
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
 script:
+  - sudo add-apt-repository ppa:kalakris/cmake
+  - sudo apt-get update -qq
+  - sudo apt-get install cmake
   - mkdir build/
   - cd build/
   - cmake ..
