@@ -10,7 +10,7 @@ This repo uses [cmake](https://cmake.org/) to compile to multiple platforms. Aft
 ### Documentation
 Currently there is no documentation of the library. The src/GLUI-Test directory has an example program that uses the library and cmake. for now this is the only thing closeto documentation for people who want to learn how to use the library. I will work on adding documentation when the core features of the library are finished.
 
-### DEpendencies
+### Dependencies
 All dependecies are downloaded when cmake is run. <br> 
 These dependecies are:
 * [GLFW] (http://www.glfw.org/) 3.2
