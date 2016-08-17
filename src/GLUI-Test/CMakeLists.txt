@@ -7,7 +7,7 @@ if(APPLE)
 		GLUI-Test 
 		MACOSX_BUNDLE 
 		${GLUI_TEST_SRC}
-		"${CMAKE_SOURCE_DIR}/arial.ttf"
+		"${CMAKE_SOURCE_DIR}/src/GLUI-Test/arial.ttf"
 		)
 	
 	SET_SOURCE_FILES_PROPERTIES(
