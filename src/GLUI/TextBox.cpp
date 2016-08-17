@@ -111,14 +111,14 @@ namespace glui {
 		//render text box
 		glBegin(GL_QUADS);
 		//Render the outline
-		glColor3f(m_desc.outlineColor.r, m_desc.outlineColor.g, m_desc.outlineColor.b);
+		glColor3f(m_desc.theme.outline.r, m_desc.theme.outline.g, m_desc.theme.outline.b);
 		glVertex2f(m_bounds.x - m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth);
 		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineWidth, m_bounds.y + m_bounds.h + m_desc.outLineWidth);
 		glVertex2f(m_bounds.x - m_desc.outLineWidth, m_bounds.y + m_bounds.h + m_desc.outLineWidth);
 
 		//Render the textbox
-		glColor3f(m_desc.boxColor.r, m_desc.boxColor.g, m_desc.boxColor.b);
+		glColor3f(m_desc.theme.body.r, m_desc.theme.body.g, m_desc.theme.body.b);
 		glVertex2f(m_bounds.x, m_bounds.y);
 		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y);
 		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
@@ -126,7 +126,7 @@ namespace glui {
 
 		if (m_renderCursor) {
 			//Render the cursor
-			glColor3f(m_desc.cursorColor.r, m_desc.cursorColor.g, m_desc.cursorColor.b);
+			glColor3f(m_desc.theme.outline.r, m_desc.theme.outline.g, m_desc.theme.outline.b);
 			glVertex2f(m_bounds.x + m_desc.outLineWidth + xOff, m_bounds.y + m_desc.outLineWidth);
 			glVertex2f(m_bounds.x + m_desc.outLineWidth + m_desc.cursorWidth + xOff, m_bounds.y + m_desc.outLineWidth);
 			glVertex2f(m_bounds.x + m_desc.outLineWidth + m_desc.cursorWidth + xOff, m_bounds.y + m_bounds.h - m_desc.outLineWidth);
@@ -135,6 +135,6 @@ namespace glui {
 		glEnd();
 		
 		//render text
-		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff, m_desc.style.size, m_desc.style.font, &(m_desc.style.color));
+		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff, m_desc.style.size, m_desc.style.font, &(m_desc.theme.text));
 	}
 }

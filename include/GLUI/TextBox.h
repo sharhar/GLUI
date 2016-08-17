@@ -7,11 +7,9 @@ namespace glui {
 
 	typedef struct TextBoxDescriptor {
 		TextStyle style;
-		Color boxColor;
-		Color outlineColor;
-		Color cursorColor;
 		float cursorWidth;
 		float outLineWidth;
+		Theme theme;
 	} TextBoxDescriptor;
 
 	class TextBox : public GLUIObject {

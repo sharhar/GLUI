@@ -87,17 +87,27 @@ int main() {
 	Rectangle rect = {100, 100, 100, 50};
 	Layout* layout = new AbsoluteLayout(&win, 800, 600);
 
-	TextStyle buttonText = { 30, font30, color::white };
-	TextStyle textBoxText = { 20, font20, color::black };
-	BasicButtonDescriptor desc = { buttonText, 
+	Theme theme = {};
+	theme.body     = color::lightGrey;
+	theme.check    = color::black;
+	theme.circle   = color::black;
+	theme.hover    = color::grey;
+	theme.outline  = color::black;
+	theme.press    = color::darkGrey;
+	theme.text     = color::black;
+
+	TextStyle buttonText = { 30, font30 };
+	TextStyle textBoxText = { 20, font20 };
+	ButtonDescriptor desc = { buttonText, 
 		[]()->void {
 			std::cout << "pressed!\n";
-		} 
+		},
+		3, theme
 	};
 
 	Button button(rect, layout, "Press", desc);
 
-	TextBoxDescriptor tdesc = { textBoxText , color::lightGrey, color::darkGrey, color::darkGrey, 1, 2 };
+	TextBoxDescriptor tdesc = { textBoxText , 1, 2, theme };
 
 	rect.h = 30;
 	rect.x = 500;
@@ -136,12 +146,10 @@ int main() {
 		});
 
 	CheckBoxDescriptor checkBoxDesc = { 
-		{ 30, font30, color::black }, 
-		color::lightGrey, 
+		{ 30, font30 }, 
 		3, 
-		color::darkGrey, 
-		color::black,
-		false
+		false,
+		theme
 	};
 
 	CheckBox checkBox({100, 200, 30, 30}, layout, "toggle", checkBoxDesc);

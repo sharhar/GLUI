@@ -45,8 +45,17 @@ namespace glui {
 	typedef struct TextStyle {
 		float size;
 		Font* font;
-		Color color;
 	} TextStyle;
+
+	typedef struct Theme {
+		Color outline;
+		Color body;
+		Color hover;
+		Color text;
+		Color press;
+		Color check;
+		Color circle;
+	} Theme;
 
 	class GLUIObject {
 	protected:

@@ -8,11 +8,9 @@ namespace glui {
 
 	typedef struct CheckBoxDescriptor {
 		TextStyle textStyle;
-		Color boxColor;
 		float outLineThickness;
-		Color outlineColor;
-		Color checkColor;
 		bool checkedAtStart;
+		Theme theme;
 	} CheckBoxDescriptor;
 
 	class CheckBox : public GLUIObject {
