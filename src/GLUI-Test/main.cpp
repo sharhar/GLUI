@@ -143,6 +143,9 @@ int main() {
 			glCallList(box);
 
 			glPopMatrix();
+		},
+		[](GLPanelMouseData* data)->void {
+			std::cout << "(" << data->pos.x << ", " << data->pos.y << ")\n";
 		});
 
 	CheckBoxDescriptor checkBoxDesc = { 

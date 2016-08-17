@@ -15,11 +15,17 @@ namespace glui {
 #define glFramebufferTexture m_glFuncs->glFramebufferTexture
 #define glCheckFramebufferStatus m_glFuncs->glCheckFramebufferStatus
 
-	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc) :
+	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc, glpanel_input_mouse_func inputMouseFunc) :
 		GLUIObject(bounds,layout){
 		m_renderFunc = renderFunc;
 		m_initGLFunc = initGLFunc;
+		m_inputMouseFunc = inputMouseFunc;
 		m_fboSize = fboSize;
+
+		m_mouseData = (GLPanelMouseData*)malloc(sizeof(GLFuncs));
+		m_mouseData->difference = {0, 0};
+		m_mouseData->pos = {-1, -1};
+		m_mouseData->leftDown = false;
 
 		m_glFuncs = (GLFuncs*)malloc(sizeof(GLFuncs));
 
@@ -69,6 +75,36 @@ namespace glui {
 	}
 
 	void GLPanel::poll() {
+		if (m_inputMouseFunc != NULL) {
+			float posx = input::Input::mousePosx * m_layout->getScaleX();
+			float posy = input::Input::mousePosy * m_layout->getScaleY();
+
+			bool down = input::Input::mouseLeftDown;
+
+			bool hovering = posx >= m_bounds.x &&
+				posx <= m_bounds.x + m_bounds.w &&
+				m_layout->getHeight() - posy >= m_bounds.y &&
+				m_layout->getHeight() - posy <= m_bounds.y + m_bounds.h;
+
+			posx -= m_bounds.x;
+			posy -= (m_layout->getHeight() - (m_bounds.y + m_bounds.h));
+
+			if (hovering) {
+				if (m_mouseData->pos.x != posx || m_mouseData->pos.y != posy || m_mouseData->leftDown != down) {
+					if (m_mouseData->difference.x != -1) {
+						m_mouseData->difference = { posx - m_mouseData->pos.x, posy - m_mouseData->pos.y };
+					}
+					else {
+						m_mouseData->difference = { 0, 0 };
+					}
+					m_mouseData->pos = { posx, posy };
+					m_mouseData->leftDown = down;
+
+					m_inputMouseFunc(m_mouseData);
+				}
+			}
+		}
+
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 		glViewport(0, 0, m_fboSize.x, m_fboSize.y);
