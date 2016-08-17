@@ -6,7 +6,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(BUILD_GLUI-TEST ON)
+option(GLUI_BUILD_TEST "Build the GLUI-Test project" ON)
 
 set(EXT_EXTRACT_DIR "${CMAKE_SOURCE_DIR}/ext")
 
@@ -135,6 +135,6 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/ext/freetype-2.6")
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI")
 
-if(BUILD_GLUI-TEST)
+if(GLUI_BUILD_TEST)
 	add_subdirectory("${CMAKE_SOURCE_DIR}/src/GLUI-Test")
 endif()
