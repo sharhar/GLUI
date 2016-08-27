@@ -7,6 +7,7 @@ namespace glui {
 		class Input {
 		public:
 			static void init();
+			static float scrollTotal;
 			static std::string* textString;
 			static size_t textInsertPoint;
 			static unsigned char* keys;
@@ -18,6 +19,7 @@ namespace glui {
 		namespace callbacks{
 			void mousePosition(int posx, int posy);
 			void mouseButton(int button, int state);
+			void mouseScroll(float scroll);
 			void key(int key, int state);
 			void text(unsigned int codepoint);
 		}

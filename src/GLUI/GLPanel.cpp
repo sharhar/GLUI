@@ -7,32 +7,32 @@ namespace glui {
 		PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
 		PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 		PFNGLFRAMEBUFFERTEXTUREPROC glFramebufferTexture;
-		PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 	} GLFuncs;
 
 #define glGenFramebuffers m_glFuncs->glGenFramebuffers
 #define glBindFramebuffer m_glFuncs->glBindFramebuffer
 #define glFramebufferTexture m_glFuncs->glFramebufferTexture
-#define glCheckFramebufferStatus m_glFuncs->glCheckFramebufferStatus
 
-	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, glpanel_init_gl_func initGLFunc, glpanel_render_func renderFunc, glpanel_input_mouse_func inputMouseFunc) :
+	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> initGLFunc, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme) :
 		GLUIObject(bounds,layout){
 		m_renderFunc = renderFunc;
 		m_initGLFunc = initGLFunc;
 		m_inputMouseFunc = inputMouseFunc;
 		m_fboSize = fboSize;
+		m_theme = theme;
+		m_prevScroll = 0;
 
-		m_mouseData = (GLPanelMouseData*)malloc(sizeof(GLFuncs));
+		m_mouseData = (GLPanelMouseData*)malloc(sizeof(GLPanelMouseData));
 		m_mouseData->difference = {0, 0};
 		m_mouseData->pos = {-1, -1};
 		m_mouseData->leftDown = false;
+		m_mouseData->scroll = 0;
 
 		m_glFuncs = (GLFuncs*)malloc(sizeof(GLFuncs));
 
 		glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glfwGetProcAddress("glGenFramebuffers");
 		glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)glfwGetProcAddress("glBindFramebuffer");
 		glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)glfwGetProcAddress("glFramebufferTexture");
-		glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)glfwGetProcAddress("glCheckFramebufferStatus");
 
 		GLuint fbo;
 		GLuint tex;
@@ -90,7 +90,8 @@ namespace glui {
 			posy -= (m_layout->getHeight() - (m_bounds.y + m_bounds.h));
 
 			if (hovering) {
-				if (m_mouseData->pos.x != posx || m_mouseData->pos.y != posy || m_mouseData->leftDown != down) {
+				if (m_mouseData->pos.x != posx || m_mouseData->pos.y != posy 
+					|| m_mouseData->leftDown != down || m_mouseData->scroll != input::Input::scrollTotal) {
 					if (m_mouseData->difference.x != -1) {
 						m_mouseData->difference = { posx - m_mouseData->pos.x, posy - m_mouseData->pos.y };
 					}
@@ -99,9 +100,12 @@ namespace glui {
 					}
 					m_mouseData->pos = { posx, posy };
 					m_mouseData->leftDown = down;
+					m_mouseData->scroll = input::Input::scrollTotal - m_prevScroll;
 
 					m_inputMouseFunc(m_mouseData);
 				}
+
+				m_prevScroll = input::Input::scrollTotal;
 			}
 		}
 
@@ -119,6 +123,15 @@ namespace glui {
 	}
 
 	void GLPanel::render() {
+		glColor3f(m_theme.outline.r, m_theme.outline.g, m_theme.outline.b);
+
+		glBegin(GL_QUADS);
+		glVertex2f(m_bounds.x - 3, m_bounds.y + m_bounds.h + 3);
+		glVertex2f(m_bounds.x + m_bounds.w + 3, m_bounds.y + m_bounds.h + 3);
+		glVertex2f(m_bounds.x + m_bounds.w + 3, m_bounds.y - 3);
+		glVertex2f(m_bounds.x - 3, m_bounds.y - 3);
+		glEnd();
+		
 		glBindTexture(GL_TEXTURE_2D, m_tex);
 
 		glColor3f(1, 1, 1);

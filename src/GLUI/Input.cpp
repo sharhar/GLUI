@@ -7,6 +7,7 @@ namespace glui {
 		size_t Input::textInsertPoint = 0;
 		int Input::mousePosx = -1;
 		int Input::mousePosy = -1;
+		float Input::scrollTotal = 0;
 		bool Input::mouseLeftDown = false;
 		unsigned char* Input::keys = new unsigned char[GLFW_KEY_LAST];
 
@@ -29,6 +30,10 @@ namespace glui {
 				}
 			}
 			
+		}
+
+		void callbacks::mouseScroll(float scroll) {
+			Input::scrollTotal += scroll;
 		}
 
 		void callbacks::key(int key, int state) {

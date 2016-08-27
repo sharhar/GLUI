@@ -19,7 +19,8 @@ namespace glui {
 	}
 
 	void GLUI::destroy() {
+		GLUIData* gData = ((GLUIData*)data);
+		FT_Done_FreeType(gData->ft);
 		glfwTerminate();
-		FT_Done_FreeType(((GLUIData*) data)->ft);
 	}
 }

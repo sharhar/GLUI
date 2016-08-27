@@ -2,13 +2,12 @@
 
 #include <GLUI/Utils.h>
 #include <GLUI/Layout.h>
+#include <functional>
 
 namespace glui {
-	typedef void(*func_callBack)(void);
-
 	typedef struct ButtonDescriptor {
 		TextStyle style;
-		func_callBack callBack;
+		std::function<void(void)> callBack;
 		float outThick;
 		Theme theme;
 	} ButtonDescriptor;

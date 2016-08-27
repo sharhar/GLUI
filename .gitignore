@@ -29,4 +29,6 @@
 *.app
 
 /build
-/ext
+/freetype-2.6
+/glcorearb
+/glfw-3.2
