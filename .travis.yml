@@ -22,16 +22,12 @@ install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
 script:
-  - ls
   - cd ..
-  - ls
   - wget https://cmake.org/files/v2.8/cmake-2.8.12-Linux-i386.tar.gz
   - tar xvzf cmake-2.8.12-Linux-i386.tar.gz
-  - ls
   - cd GLUI
-  - ls
   - mkdir build/
   - cd build/
-  - ls
+  - ls ../../cmake-2.8.12-Linux-i386
   - ../../cmake-2.8.12-Linux-i386/bin/cmake ..
   - make
