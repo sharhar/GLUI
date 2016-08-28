@@ -28,6 +28,6 @@ script:
   - cd GLUI
   - mkdir build/
   - cd build/
-  - ls ../../cmake-2.8.12-Linux-i386
+  - ls ../../cmake-2.8.12-Linux-i386/bin
   - ../../cmake-2.8.12-Linux-i386/bin/cmake ..
   - make
