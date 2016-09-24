@@ -7,7 +7,7 @@ namespace glui {
 	void GLUI::init() {
 		glfwInit();
 
-		input::Input::init();
+		input::InputData::init();
 
 		GLUIData* gData = (GLUIData*) malloc(sizeof(GLUIData));
 

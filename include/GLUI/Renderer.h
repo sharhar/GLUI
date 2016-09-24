@@ -13,5 +13,6 @@ namespace glui {
 		static void reinit();
 		static void clear(Color color);
 		static void drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color* color);
+		static void drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color* color);
 	};
 }

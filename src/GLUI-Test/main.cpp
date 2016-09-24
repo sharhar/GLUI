@@ -1,10 +1,10 @@
 #include <GLUI/GLUI.h>
 
-//Only for testing, won't be needed when using GLUI
-#define GLFW_INCLUDE_GLU
-#include <GLFW/glfw3.h>  
-#include <math.h>		 
-#include <iostream>		 
+#define GLFW_INCLUDE_GLU   //----------------------------------------------------------
+                           //
+#include <GLFW/glfw3.h>    //    Only for testing, won't be needed when using GLUI
+#include <math.h>		   //
+#include <iostream>		   //----------------------------------------------------------
 
 using namespace glui;
 
@@ -55,7 +55,7 @@ void cube() {
 int main() {
 	GLUI::init();
 
-	Window win("GLUI Test", 800, 600);
+	Window win("GLUI Test", 800, 600, false, 0, NULL);
 
 	Renderer::init(&win);
 
@@ -88,19 +88,38 @@ int main() {
 	Layout* layout = new AbsoluteLayout(&win, 800, 600);
 
 	Theme theme = {};
-	theme.body     = color::lightGrey;
-	theme.check    = color::black;
-	theme.circle   = color::black;
-	theme.hover    = color::grey;
-	theme.outline  = color::black;
-	theme.press    = color::darkGrey;
-	theme.text     = color::black;
+	theme.body					= color::lightGrey;
+	theme.check					= color::black;
+	theme.circle				= color::black;
+	theme.hover					= color::grey;
+	theme.outline				= color::black;
+	theme.press					= color::darkGrey;
+	theme.text					= color::black;
+	theme.popupBackground		= color::lightGrey;
+	theme.popupText				= color::black;
 
 	TextStyle buttonText = { 30, font30 };
 	TextStyle textBoxText = { 20, font20 };
 	ButtonDescriptor desc = { buttonText, 
-		[]()->void {
-			std::cout << "pressed!\n";
+		[&]()->void {
+			char** chars = new char*[2];
+			chars[0] = "Cancel";
+			chars[1] = "Ok";
+
+			PopupDescriptor pDesc = {};
+			pDesc.width = 300;
+			pDesc.height = 200;
+			pDesc.title = "Popup!";
+			pDesc.text = "This is a popup!";
+			pDesc.btnNum = 2;
+			pDesc.btnText = (const char**)chars;
+			pDesc.window = &win;
+			pDesc.bodyTextStyle = textBoxText;
+			pDesc.buttonTextStyle = buttonText;
+
+			int result = Window::popup(pDesc, theme);
+
+			std::cout << "popup returned: " << result << "\n";
 		},
 		3, theme
 	};
@@ -145,8 +164,8 @@ int main() {
 			glPopMatrix();
 		},
 		[](GLPanelMouseData* data)->void {
-			std::cout << "(" << data->pos.x << ", " << data->pos.y << ")\n";
-		});
+			
+		}, theme);
 
 	CheckBoxDescriptor checkBoxDesc = { 
 		{ 30, font30 }, 

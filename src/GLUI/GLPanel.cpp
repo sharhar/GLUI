@@ -76,10 +76,10 @@ namespace glui {
 
 	void GLPanel::poll() {
 		if (m_inputMouseFunc != NULL) {
-			float posx = input::Input::mousePosx * m_layout->getScaleX();
-			float posy = input::Input::mousePosy * m_layout->getScaleY();
+			float posx = input::InputData::mousePosx * m_layout->getScaleX();
+			float posy = input::InputData::mousePosy * m_layout->getScaleY();
 
-			bool down = input::Input::mouseLeftDown;
+			bool down = input::InputData::mouseLeftDown;
 
 			bool hovering = posx >= m_bounds.x &&
 				posx <= m_bounds.x + m_bounds.w &&
@@ -91,7 +91,7 @@ namespace glui {
 
 			if (hovering) {
 				if (m_mouseData->pos.x != posx || m_mouseData->pos.y != posy 
-					|| m_mouseData->leftDown != down || m_mouseData->scroll != input::Input::scrollTotal) {
+					|| m_mouseData->leftDown != down || m_mouseData->scroll != input::InputData::scrollTotal) {
 					if (m_mouseData->difference.x != -1) {
 						m_mouseData->difference = { posx - m_mouseData->pos.x, posy - m_mouseData->pos.y };
 					}
@@ -100,12 +100,12 @@ namespace glui {
 					}
 					m_mouseData->pos = { posx, posy };
 					m_mouseData->leftDown = down;
-					m_mouseData->scroll = input::Input::scrollTotal - m_prevScroll;
+					m_mouseData->scroll = input::InputData::scrollTotal - m_prevScroll;
 
 					m_inputMouseFunc(m_mouseData);
 				}
 
-				m_prevScroll = input::Input::scrollTotal;
+				m_prevScroll = input::InputData::scrollTotal;
 			}
 		}
 

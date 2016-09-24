@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 namespace glui {
 	namespace input {
-		class Input {
+		class InputData {
 		public:
 			static void init();
 			static float scrollTotal;
@@ -14,6 +15,7 @@ namespace glui {
 			static int mousePosx;
 			static int mousePosy;
 			static bool mouseLeftDown;
+			static std::function<void(void)>* textBoxEnterFunc;
 		};
 
 		namespace callbacks{
@@ -27,6 +29,7 @@ namespace glui {
 		namespace keyboard {
 			void setTextCallback(std::string* string);
 			void setTextInsertPoint(size_t index);
+			void setEnterFunc(std::function<void(void)>* func);
 		}
 
 		namespace mouse {

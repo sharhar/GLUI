@@ -10,7 +10,6 @@ typedef struct GLUIData {
 	FT_Library ft;
 } GLUIData;
 
-
 typedef struct Character {
 	GLuint tex;
 	float sizex;

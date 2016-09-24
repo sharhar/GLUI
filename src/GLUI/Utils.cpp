@@ -3,8 +3,6 @@
 
 namespace glui {
 
-	//Color color::black = {0, 0, 0};
-
 	Font::Font(std::string path, float a_size) {
 		GLUIData* data = (GLUIData*)GLUI::data;
 
@@ -19,6 +17,21 @@ namespace glui {
 		size = a_size;
 
 		FT_Set_Pixel_Sizes(face, 0, (int)size);
+
+		m_face = face;
+
+		loadGL(0);
+		current = 0;
+
+		m_inited = true;
+	}
+
+	void Font::loadGL(int num) {
+		if (chars.size() > num) {
+			del(num);
+		}
+
+		FT_Face face = (FT_Face)m_face;
 
 		Character** t_chars = new Character*[127];
 
@@ -69,9 +82,20 @@ namespace glui {
 			t_chars[c] = car;
 		}
 
-		chars = (void*)t_chars;
+		if (chars.size() <= num) {
+			chars.push_back((void*)t_chars);
+		} else {
+			chars[num] = (void*)t_chars;
+		}
+	}
 
-		m_inited = true;
+	void Font::del(int num) {
+		Character** t_chars = (Character**)chars[num];
+		for (int i = 0; i < 127;i++) {
+			free(t_chars[i]);
+		}
+
+		free(t_chars);
 	}
 
 	bool Font::inited() {

@@ -11,10 +11,10 @@ namespace glui {
 	}
 
 	void CheckBox::poll() {
-		float posx = input::Input::mousePosx * m_layout->getScaleX();
-		float posy = input::Input::mousePosy * m_layout->getScaleY();
+		float posx = input::InputData::mousePosx * m_layout->getScaleX();
+		float posy = input::InputData::mousePosy * m_layout->getScaleY();
 
-		bool down = input::Input::mouseLeftDown;
+		bool down = input::InputData::mouseLeftDown;
 
 		bool hovering = posx >= m_bounds.x &&
 			posx <= m_bounds.x + m_bounds.w &&

@@ -35,7 +35,11 @@ namespace glui {
 	}
 
 	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color* color) {
-		Character** chars = (Character**)font->chars;
+		drawString(text, font->current, posx, posy, scale, font, color);
+	}
+
+	void Renderer::drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color* color) {
+		Character** chars = (Character**)font->chars[num];
 
 		float xOff = 0;
 		float yOff = 0;

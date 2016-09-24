@@ -16,25 +16,44 @@ namespace glui {
 
 		m_prevKeys = new unsigned char[GLFW_KEY_LAST];
 		memset(m_prevKeys, 0, sizeof(unsigned char) * GLFW_KEY_LAST);
+
+		m_enterFunc = []() -> void {};
+	}
+
+	void TextBox::clearText() {
+		input::keyboard::setTextCallback(NULL);
+		input::keyboard::setEnterFunc(NULL);
+
+		m_text = "";
+		m_cursorPos = 0;
+	}
+
+	TextBox::~TextBox() {
+		delete[] m_prevKeys;
+	}
+	
+	void TextBox::setEnterFunc(std::function<void(void)> enterFunc) {
+		m_enterFunc = enterFunc;
 	}
 
 	void TextBox::poll() {
-		float posx = input::Input::mousePosx * m_layout->getScaleX();
-		float posy = input::Input::mousePosy * m_layout->getScaleY();
+		float posx = input::InputData::mousePosx * m_layout->getScaleX();
+		float posy = input::InputData::mousePosy * m_layout->getScaleY();
 
-		bool down = input::Input::mouseLeftDown;
+		bool down = input::InputData::mouseLeftDown;
 
 		bool hovering = posx >= m_bounds.x &&
 			posx <= m_bounds.x + m_bounds.w &&
 			m_layout->getHeight() - posy >= m_bounds.y &&
 			m_layout->getHeight() - posy <= m_bounds.y + m_bounds.h;
 
-		m_isActive = input::Input::textString == &m_text;
+		m_isActive = input::InputData::textString == &m_text;
 
 		if (down && !m_prevDown) {
 			if (hovering) {
 				input::keyboard::setTextCallback(&m_text);
 				input::keyboard::setTextInsertPoint(m_cursorPos);
+				input::keyboard::setEnterFunc(&m_enterFunc);
 				m_writting = true;
 				m_isActive = true;
 				m_time = glfwGetTime();
@@ -42,7 +61,8 @@ namespace glui {
 			}
 			else {
 				if (m_isActive) {
-					input::keyboard::setTextCallback(0);
+					input::keyboard::setTextCallback(NULL);
+					input::keyboard::setEnterFunc(NULL);
 				}
 
 				m_renderCursor = true;
@@ -62,13 +82,13 @@ namespace glui {
 		m_cursorPos += sizeOff;
 		m_prevTextSize = m_text.size();
 
-		if (input::Input::keys[GLFW_KEY_LEFT] && !m_prevKeys[GLFW_KEY_LEFT] && m_isActive && m_text.size() > 0) {
+		if (input::InputData::keys[GLFW_KEY_LEFT] && !m_prevKeys[GLFW_KEY_LEFT] && m_isActive && m_cursorPos > 0) {
 			m_cursorPos -= 1;
 			m_renderCursor = true;
 			m_time = glfwGetTime();
 		}
 
-		if (input::Input::keys[GLFW_KEY_RIGHT] && !m_prevKeys[GLFW_KEY_RIGHT] && m_isActive && m_text.size() > m_cursorPos) {
+		if (input::InputData::keys[GLFW_KEY_RIGHT] && !m_prevKeys[GLFW_KEY_RIGHT] && m_isActive && m_text.size() > m_cursorPos) {
 			m_cursorPos += 1;
 			m_renderCursor = true;
 			m_time = glfwGetTime();
@@ -79,7 +99,7 @@ namespace glui {
 			m_time = glfwGetTime();
 		}
 
-		memcpy(m_prevKeys, input::Input::keys, sizeof(unsigned char)*GLFW_KEY_LAST);
+		memcpy(m_prevKeys, input::InputData::keys, sizeof(unsigned char)*GLFW_KEY_LAST);
 
 		if (m_isActive && glfwGetTime() - m_time >= 0.55) {
 			m_renderCursor = !m_renderCursor;
@@ -89,7 +109,7 @@ namespace glui {
 
 	void TextBox::render() {
 		//Get offset of cursor
-		Character** chars = (Character**)m_desc.style.font->chars;
+		Character** chars = (Character**)m_desc.style.font->chars[m_desc.style.font->current];
 
 		float xOff = 0;
 		float s = m_desc.style.size / m_desc.style.font->size;

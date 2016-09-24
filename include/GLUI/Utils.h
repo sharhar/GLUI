@@ -1,7 +1,7 @@
 #pragma once
 
-#include <GLUI/Layout.h>
 #include <string>
+#include <vector>
 
 namespace glui {
 	typedef struct Color {
@@ -25,13 +25,17 @@ namespace glui {
 	class Font {
 	private:
 		bool m_inited;
+		void* m_face;
 	public:
 		Font(std::string path, float a_size);
 
-		void* chars;
+		std::vector<void*> chars;
 		float size;
+		int current;
 
 		bool inited();
+		void loadGL(int num);
+		void del(int num);
 	};
 
 	typedef struct Rectangle {
@@ -55,20 +59,7 @@ namespace glui {
 		Color press;
 		Color check;
 		Color circle;
+		Color popupBackground;
+		Color popupText;
 	} Theme;
-
-	class GLUIObject {
-	protected:
-		Rectangle m_bounds;
-		Layout* m_layout;
-	public:
-		GLUIObject(Rectangle bounds, Layout* layout);
-
-		Rectangle getBounds() { return m_bounds; }
-		void setPos(Vector2f pos);
-		void setSize(Vector2f size);
-
-		virtual void poll() = 0;
-		virtual void render() = 0;
-	};
 }
