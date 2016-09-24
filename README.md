@@ -1,6 +1,5 @@
 # GLUI (OpenGL User Interface)
 
-Travis-ci<br> ![picture alt](https://travis-ci.org/sharhar/GLUI.svg?branch=master "Travis.ci build status")
 ### General info
 This library was made so that there would be a cross platform UI library the uses and integrates OpenGL. Right now it is in very early stages of deveopment and will have much more (and existent) documentation and many, many, more features.
 
