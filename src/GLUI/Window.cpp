@@ -24,12 +24,12 @@ namespace glui {
 		input::callbacks::mouseScroll(yoffset);
 	}
 
-	static void focusCallback(GLFWwindow* window, int focused) {
+	void focusCallback(GLFWwindow* window, int focused) {
 		Window* win = (Window*) glfwGetWindowUserPointer(window);
 		win->m_focused = focused;
 	}
 
-	static void posCallback(GLFWwindow* window, int xpos, int ypos) {
+	void posCallback(GLFWwindow* window, int xpos, int ypos) {
 		Window* win = (Window*)glfwGetWindowUserPointer(window);
 		win->m_xpos = xpos;
 		win->m_ypos = ypos;
@@ -80,7 +80,7 @@ namespace glui {
 
 		GLenum err = GL_NO_ERROR;
 		while ((err = glGetError()) != GL_NO_ERROR) {
-			std::cout << "GLError: " << err << "\n";
+			//std::cout << "GLError: " << err << "\n";
 		}
 	}
 
@@ -153,7 +153,7 @@ namespace glui {
 						}, 3, theme
 					};
 
-					Rectangle rect = { 10 + (sizex + 10)*i, 10, sizex, 50 };
+					Rectangle rect = { (float) (10 + (sizex + 10)*i), 10, (float)(sizex), 50 };
 
 					Button* button = new Button(rect, layout, std::string(desc.btnText[i]), bDesc);
 
@@ -194,8 +194,10 @@ namespace glui {
 			desc.buttonTextStyle.font->del(1);
 			desc.buttonTextStyle.font->chars.pop_back();
 
-			desc.bodyTextStyle.font->del(1);
-			desc.bodyTextStyle.font->chars.pop_back();
+			if (desc.bodyTextStyle.font->chars.size() >= 2) {
+				desc.bodyTextStyle.font->del(1);
+				desc.bodyTextStyle.font->chars.pop_back();
+			}
 		});
 
 		thread.join();

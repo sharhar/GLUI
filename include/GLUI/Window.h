@@ -31,8 +31,8 @@ namespace glui{
 
 		void* getGLFWwindow();
 
-		friend static void focusCallback(GLFWwindow* window, int focused);
-		friend static void posCallback(GLFWwindow* window, int xpos, int ypos);
+		friend void focusCallback(GLFWwindow* window, int focused);
+		friend void posCallback(GLFWwindow* window, int xpos, int ypos);
 	};
 
 	typedef struct PopupDescriptor {
