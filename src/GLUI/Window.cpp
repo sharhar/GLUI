@@ -35,6 +35,21 @@ namespace glui {
 		win->m_ypos = ypos;
 	}
 
+	WindowCallbacks Window::getCallbacks() {
+		WindowCallbacks result = {};
+		result.key = input::callbacks::key;
+		result.mousePos = input::callbacks::mousePosition;
+		result.mouseButton = input::callbacks::mouseButton;
+		result.mouseScroll = input::callbacks::mouseScroll;
+		result.text = input::callbacks::text;
+		return result;
+	}
+
+	Window::Window(GLFWwindow* glfwWin) {
+		m_window = glfwWin;
+		glfwGetWindowSize(glfwWin, &m_width, &m_height);
+	}
+
 	Window::Window(const char* title, int width, int height, bool resizeable, int iconNum, GLFWimage* icon) {
 		m_width = width;
 		m_height = height;
@@ -96,7 +111,7 @@ namespace glui {
 		glfwDestroyWindow(m_window);
 	}
 
-	void* Window::getGLFWwindow() {
+	GLFWwindow* Window::getGLFWwindow() {
 		return m_window;
 	}
 

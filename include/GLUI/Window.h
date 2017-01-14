@@ -1,11 +1,20 @@
 #pragma once
 
 #include <GLUI/Utils.h>
+#include <functional>
 
 struct GLFWwindow;
 struct GLFWimage;
 
 namespace glui{
+
+	typedef struct WindowCallbacks {
+		std::function<void(int, int)> key;
+		std::function<void(unsigned int)> text;
+		std::function<void(int, int)> mousePos;
+		std::function<void(int, int)> mouseButton;
+		std::function<void(float)> mouseScroll;
+	} WindowCallbacks;
 
 	typedef struct PopupDescriptor;
 
@@ -19,6 +28,7 @@ namespace glui{
 		int m_focused;
 	public:
 		Window(const char* title, int width, int height, bool resizeable, int iconNum, GLFWimage* icon);
+		Window(GLFWwindow* glfwWin);
 		void poll();
 		int getWidth() { return m_width; }
 		int getHeight() { return m_height; }
@@ -27,9 +37,10 @@ namespace glui{
 		bool isOpen();
 		void swap();
 		void destroy();
+		WindowCallbacks getCallbacks();
 		static int popup(PopupDescriptor desc, Theme theme);
 
-		void* getGLFWwindow();
+		GLFWwindow* getGLFWwindow();
 
 		friend void focusCallback(GLFWwindow* window, int focused);
 		friend void posCallback(GLFWwindow* window, int xpos, int ypos);
