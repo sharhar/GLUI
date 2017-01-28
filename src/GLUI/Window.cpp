@@ -93,10 +93,12 @@ namespace glui {
 	void Window::poll() {
 		glfwPollEvents();
 
+#ifdef _DEBUG
 		GLenum err = GL_NO_ERROR;
 		while ((err = glGetError()) != GL_NO_ERROR) {
-			//std::cout << "GLError: " << err << "\n";
+			std::cout << "GLError: " << err << "\n";
 		}
+#endif
 	}
 
 	void Window::swap() {
