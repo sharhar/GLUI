@@ -16,6 +16,7 @@ namespace glui {
 	GLuint Renderer::projectionLoc = 0;
 	GLuint Renderer::texLoc = 0;
 	float* Renderer::m_modelview = NULL;
+    float* Renderer::m_projection = NULL;
 
 	void Renderer::init(Window* window) {
 		m_width = window->getWidth();
@@ -176,13 +177,13 @@ namespace glui {
 		projectionLoc = glGetUniformLocation(shaderProgram, "projection");
 		texLoc = glGetUniformLocation(shaderProgram, "tex");
 
-		float* projectionMat = new float[16];
-		Utils::getOrthoMatrix(projectionMat, 0, m_width, 0, m_height, -1, 1);
+		m_projection = new float[16];
+		Utils::getOrthoMatrix(m_projection, 0, m_width, 0, m_height, -1, 1);
 
 		glUseProgram(shaderProgram);
 
 		glUniform1i(texLoc, 0);
-		glUniformMatrix4fv(projectionLoc, 1, false, projectionMat);
+		glUniformMatrix4fv(projectionLoc, 1, false, m_projection);
 
 		glUseProgram(0);
 
@@ -279,4 +280,14 @@ namespace glui {
 		Renderer::setUniforms(0, m_modelview, color);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
+    
+    void Renderer::setProjection(float left, float right, float bottom, float top, float near, float far) {
+        Utils::getOrthoMatrix(m_projection, left, right, bottom, top, near, far);
+        
+        glUseProgram(shaderProgram);
+        
+        glUniformMatrix4fv(projectionLoc, 1, false, m_projection);
+        
+        glUseProgram(0);
+    }
 }

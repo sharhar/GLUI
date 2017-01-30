@@ -219,6 +219,8 @@ namespace glui {
         glfwSetCharCallback(window, textCallBack);
         glfwSetScrollCallback(window, mouseScrollCallback);
 
+        Renderer::setProjection(0, desc.width, 0, desc.height, -1, 1);
+        
         glViewport(0, 0, desc.width, desc.height);
 
         glDisable(GL_DEPTH_TEST);
@@ -284,6 +286,8 @@ namespace glui {
         glfwDestroyWindow(window);
         
         glfwMakeContextCurrent(desc.window->getGLFWwindow());
+        
+        Renderer::setProjection(0, desc.window->getWidth(), 0, desc.window->getHeight(), -1, 1);
         
 		input::InputData::mouseLeftDown = false;
 
