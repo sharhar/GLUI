@@ -199,104 +199,92 @@ namespace glui {
 		int result = -1;
 
 		input::InputData::mouseLeftDown = false;
+        
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        
+        GLFWwindow* window = glfwCreateWindow(desc.width, desc.height, desc.title, NULL, desc.window->getGLFWwindow());
+        glfwMakeContextCurrent(window);
 
-		std::thread thread([&]() -> void {
-			GLFWwindow* window = glfwCreateWindow(desc.width, desc.height, desc.title, NULL, NULL);
-			glfwMakeContextCurrent(window);
+        glfwSetWindowPos(window,
+            (desc.window->getWidth() - desc.width) / 2 + desc.window->getX(),
+            (desc.window->getHeight() - desc.height) / 2 + desc.window->getY());
 
-			glfwSetWindowPos(window,
-				(desc.window->getWidth() - desc.width) / 2 + desc.window->getX(),
-				(desc.window->getHeight() - desc.height) / 2 + desc.window->getY());
+        glfwSetKeyCallback(window, keyCallback);
+        glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        glfwSetCursorPosCallback(window, mousePosCallback);
+        glfwSetCharCallback(window, textCallBack);
+        glfwSetScrollCallback(window, mouseScrollCallback);
 
-			glfwSetKeyCallback(window, keyCallback);
-			glfwSetMouseButtonCallback(window, mouseButtonCallback);
-			glfwSetCursorPosCallback(window, mousePosCallback);
-			glfwSetCharCallback(window, textCallBack);
-			glfwSetScrollCallback(window, mouseScrollCallback);
+        glViewport(0, 0, desc.width, desc.height);
 
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glOrtho(0, desc.width, 0, desc.height, -1, 1);
-			glMatrixMode(GL_MODELVIEW);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			glViewport(0, 0, desc.width, desc.height);
+        Layout* layout = new AbsoluteLayout(NULL, desc.width, desc.height);
 
-			glEnable(GL_TEXTURE_2D);
+        std::vector<Button*> buttons;
 
-			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (desc.btnNum > 0) {
+            int sizex = (desc.width - 10) / desc.btnNum - 10;
 
-			Layout* layout = new AbsoluteLayout(NULL, desc.width, desc.height);
+            for (int i = 0; i < desc.btnNum;i++) {
+                ButtonDescriptor bDesc = {
+                    desc.buttonTextStyle,
+                    [i, &result]() -> void {
+                        result = i;
+                    }, 3, theme
+                };
 
-			desc.bodyTextStyle.font->loadGL(1);
-			desc.bodyTextStyle.font->current = 1;
+                Rectangle rect = { (float) (10 + (sizex + 10)*i), 10, (float)(sizex), 50 };
 
-			desc.buttonTextStyle.font->loadGL(1);
-			desc.buttonTextStyle.font->current = 1;
+                Button* button = new Button(rect, layout, std::string(desc.btnText[i]), bDesc);
+                
+                buttons.push_back(button);
+            }
+        }
+        
+            
+        glClearColor(theme.popupBackground.r, theme.popupBackground.g, theme.popupBackground.b, 1);
+        while (!glfwWindowShouldClose(window) && result == -1) {
+            glfwPollEvents();
+                
+            glClear(GL_COLOR_BUFFER_BIT);
+            
+            if (desc.btnNum > 0) {
+                for (int i = 0; i < desc.btnNum; i++) {
+                    buttons[i]->poll();
+                }
+            }
+            
+            Renderer::beginDraw();
+            
+            Renderer::drawString(desc.text, 10, desc.height - desc.bodyTextStyle.font->size - 10, desc.bodyTextStyle.size , desc.bodyTextStyle.font, theme.popupText);
 
-			std::vector<Button*> buttons;
+            if (desc.btnNum > 0) {
+                for (int i = 0; i < desc.btnNum; i++) {
+                        buttons[i]->render();
+                }
+                
+            }
+            
+            Renderer::endDraw();
 
-			if (desc.btnNum > 0) {
-				int sizex = (desc.width - 10) / desc.btnNum - 10;
+            glfwSwapBuffers(window);
+        }
 
-				for (int i = 0; i < desc.btnNum;i++) {
-					ButtonDescriptor bDesc = {
-						desc.buttonTextStyle,
-						[i, &result]() -> void {
-							result = i;
-						}, 3, theme
-					};
-
-					Rectangle rect = { (float) (10 + (sizex + 10)*i), 10, (float)(sizex), 50 };
-
-					Button* button = new Button(rect, layout, std::string(desc.btnText[i]), bDesc);
-
-					buttons.push_back(button);
-				}
-			}
-
-
-
-			glClearColor(theme.popupBackground.r, theme.popupBackground.g, theme.popupBackground.b, 1);
-			while (!glfwWindowShouldClose(window) && result == -1) {
-				glfwPollEvents();
-				glClear(GL_COLOR_BUFFER_BIT);
-
-				Renderer::drawString(desc.text, 10, desc.height - desc.bodyTextStyle.font->size - 10, desc.bodyTextStyle.size , desc.bodyTextStyle.font, theme.popupText);
-
-				if (desc.btnNum > 0) {
-					for (int i = 0; i < desc.btnNum; i++) {
-						buttons[i]->poll();
-					}
-
-					for (int i = 0; i < desc.btnNum; i++) {
-						buttons[i]->render();
-					}
-				}
-
-				glfwSwapBuffers(window);
-			}
-
-			if (result == -1) {
-				result = 0;
-			}
-
-			desc.buttonTextStyle.font->current = 0;
-			desc.bodyTextStyle.font->current = 0;
-			glfwDestroyWindow(window);
-
-			desc.buttonTextStyle.font->del(1);
-			desc.buttonTextStyle.font->chars.pop_back();
-
-			if (desc.bodyTextStyle.font->chars.size() >= 2) {
-				desc.bodyTextStyle.font->del(1);
-				desc.bodyTextStyle.font->chars.pop_back();
-			}
-		});
-
-		thread.join();
-
+        if (result == -1) {
+            result = 0;
+        }
+        
+        glfwDestroyWindow(window);
+        
+        glfwMakeContextCurrent(desc.window->getGLFWwindow());
+        
 		input::InputData::mouseLeftDown = false;
 
 		return result;
