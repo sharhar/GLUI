@@ -1,9 +1,67 @@
-#include <GLUI/GLUI.h>
+﻿#include <GLUI/GLUI.h>
 #include <GLUIExt.h>
 #include <iostream>
 #include <thread>
 
 namespace glui {
+#ifdef _DEBUG
+	const char*
+		getGLSourceStr(GLenum source)
+	{
+		static const char* sources[] = {
+			"API",   "Window System", "Shader Compiler", "Third Party", "Application",
+			"Other", "Unknown"
+		};
+
+		int str_idx =
+			min(source - GL_DEBUG_SOURCE_API,
+				sizeof(sources) / sizeof(const char *));
+
+		return sources[str_idx];
+	}
+
+	const char*
+		getGLTypeStr(GLenum type)
+	{
+		static const char* types[] = {
+			"Error",       "Deprecated Behavior", "Undefined Behavior", "Portability",
+			"Performance", "Other",               "Unknown"
+		};
+
+		int str_idx =
+			min(type - GL_DEBUG_TYPE_ERROR,
+				sizeof(types) / sizeof(const char *));
+
+		return types[str_idx];
+	}
+
+	const char*
+		getGLSeverityStr(GLenum severity)
+	{
+		static const char* severities[] = {
+			"High", "Medium", "Low", "Unknown"
+		};
+
+		int str_idx =
+			min(severity - GL_DEBUG_SEVERITY_HIGH,
+				sizeof(severities) / sizeof(const char *));
+
+		return severities[str_idx];
+	}
+
+	static void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id,
+		GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+		
+		std::cout << "OpenGL Error:\n";
+		std::cout << "=============\n";
+		std::cout << " Object ID: " << id << "\n";
+		//std::cout << " Severity: " << getGLSeverityStr(severity) << "\n";
+		std::cout << " Type: " << getGLTypeStr(type) << "\n";
+		std::cout << " Source: " << getGLSourceStr(source) << "\n";
+		std::cout << " Message: " << message << "\n\n";
+	}
+#endif
+
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		input::callbacks::key(key, action);
 	}
@@ -60,9 +118,29 @@ namespace glui {
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 		}
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef _DEBUG
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#endif
 		GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
 		glfwMakeContextCurrent(window);
 
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+			std::cout << "Could not load OpenGL!\n";
+			exit(-1);
+		}
+#ifdef _DEBUG
+		PFNGLDEBUGMESSAGECALLBACKPROC pfnDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC)
+			glfwGetProcAddress("glDebugMessageCallback");
+
+		if (pfnDebugMessageCallback) {
+			pfnDebugMessageCallback(glDebugCallback, NULL);
+		}
+#endif
 		glfwSwapInterval(1);
 
 		const GLFWvidmode* vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -96,7 +174,7 @@ namespace glui {
 #ifdef _DEBUG
 		GLenum err = GL_NO_ERROR;
 		while ((err = glGetError()) != GL_NO_ERROR) {
-			std::cout << "GLError: " << err << "\n";
+			
 		}
 #endif
 	}
@@ -185,7 +263,7 @@ namespace glui {
 				glfwPollEvents();
 				glClear(GL_COLOR_BUFFER_BIT);
 
-				Renderer::drawString(desc.text, 10, desc.height - desc.bodyTextStyle.font->size - 10, desc.bodyTextStyle.size , desc.bodyTextStyle.font, &theme.popupText);
+				Renderer::drawString(desc.text, 10, desc.height - desc.bodyTextStyle.font->size - 10, desc.bodyTextStyle.size , desc.bodyTextStyle.font, theme.popupText);
 
 				if (desc.btnNum > 0) {
 					for (int i = 0; i < desc.btnNum; i++) {

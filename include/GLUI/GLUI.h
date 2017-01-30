@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glad/glad.hpp>
 #include <GLUI/Button.h>
 #include <GLUI/CheckBox.h>
 #include <GLUI/GLPanel.h>

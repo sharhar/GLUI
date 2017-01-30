@@ -45,24 +45,15 @@ namespace glui {
 			c = m_desc.theme.hover;
 		}
 
-		glBegin(GL_QUADS);
 		if (m_desc.outThick > 0) {
-			glColor3f(m_desc.theme.outline.r, m_desc.theme.outline.g, m_desc.theme.outline.b);
-			glVertex2f(m_bounds.x - m_desc.outThick, m_bounds.y - m_desc.outThick);
-			glVertex2f(m_bounds.x - m_desc.outThick, m_bounds.y + m_bounds.h + m_desc.outThick);
-			glVertex2f(m_bounds.x + m_bounds.w + m_desc.outThick, m_bounds.y + m_bounds.h + m_desc.outThick);
-			glVertex2f(m_bounds.x + m_bounds.w + m_desc.outThick, m_bounds.y - m_desc.outThick);
+			Renderer::drawRect(m_bounds.x - m_desc.outThick, m_bounds.y - m_desc.outThick, 
+				m_bounds.w + m_desc.outThick * 2, m_bounds.h + m_desc.outThick * 2, m_desc.theme.outline);
 		}
-		
-		glColor3f(c.r, c.g, c.b);
-		glVertex2f(m_bounds.x, m_bounds.y);
-		glVertex2f(m_bounds.x, m_bounds.y + m_bounds.h);
-		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
-		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y);
-		glEnd();
+
+		Renderer::drawRect(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, c);
 
 		float off = (m_bounds.h - m_desc.style.size)/2.0f;
 
-		Renderer::drawString(m_text, m_bounds.x + off, m_bounds.y + off*1.5f, m_desc.style.size, m_desc.style.font, &(m_desc.theme.text));
+		Renderer::drawString(m_text, m_bounds.x + off, m_bounds.y + off*1.5f, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
 	}
 }

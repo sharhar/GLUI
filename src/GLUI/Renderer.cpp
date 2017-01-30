@@ -2,31 +2,199 @@
 #include <GLUIExt.h>
 
 namespace glui {
-	unsigned int Renderer::glInitList = 0;
+	int Renderer::m_width = 0;
+	int Renderer::m_height = 0;
+	GLuint Renderer::quadVAO = 0;
+	GLuint Renderer::quadVBOPosition = 0;
+	GLuint Renderer::quadVBOTexCoord = 0;
+	GLuint Renderer::vertShader = 0;
+	GLuint Renderer::fragShader = 0;
+	GLuint Renderer::shaderProgram = 0;
+	GLuint Renderer::modeLoc = 0;
+	GLuint Renderer::colorLoc = 0;
+	GLuint Renderer::modelviewLoc = 0;
+	GLuint Renderer::projectionLoc = 0;
+	GLuint Renderer::texLoc = 0;
+	float* Renderer::m_modelview = NULL;
 
 	void Renderer::init(Window* window) {
-		glInitList = glGenLists(1);
-		glNewList(glInitList, GL_COMPILE_AND_EXECUTE);
+		m_width = window->getWidth();
+		m_height = window->getHeight();
+		
+		reinit();
 
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, window->getWidth(), 0, window->getHeight(), -1, 1);
-		glMatrixMode(GL_MODELVIEW);
+		GLfloat* verts = (GLfloat*)malloc(sizeof(GLfloat) * 6 * 2);
 
-		glViewport(0, 0, window->getWidth(), window->getHeight());
+		verts[0] = -0.5f;
+		verts[1] = -0.5f;
 
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_MULTISAMPLE);
+		verts[2] = 0.5f;
+		verts[3] = -0.5f;
+		
+		verts[4] = 0.5f;
+		verts[5] = 0.5f;
+		
+		verts[6] = -0.5f;
+		verts[7] = -0.5f;
+		
+		verts[8] = -0.5f;
+		verts[9] = 0.5f;
+		
+		verts[10] = 0.5f;
+		verts[11] = 0.5f;
 
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GLfloat* texCoords = (GLfloat*)malloc(sizeof(GLfloat) * 6 * 2);
 
-		glEndList();
+		texCoords[0] = 0;
+		texCoords[1] = 1;
+
+		texCoords[2] = 1;
+		texCoords[3] = 1;
+
+		texCoords[4] = 1;
+		texCoords[5] = 0;
+
+		texCoords[6] = 0;
+		texCoords[7] = 1;
+
+		texCoords[8] = 0;
+		texCoords[9] = 0;
+
+		texCoords[10] = 1;
+		texCoords[11] = 0;
+
+		glGenVertexArrays(1, &quadVAO);
+		glBindVertexArray(quadVAO);
+
+		glGenBuffers(1, &quadVBOPosition);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBOPosition);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 2, verts, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glGenBuffers(1, &quadVBOTexCoord);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBOTexCoord);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 2, texCoords, GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindVertexArray(0);
+
+		std::string vertSource = "";
+
+		vertSource += "#version 330 core\n";
+
+		vertSource += "in vec2 position;\n";
+		vertSource += "in vec2 texcoord;\n";
+		vertSource += "uniform mat4 modelview;\n";
+		vertSource += "uniform mat4 projection;\n";
+
+		vertSource += "out vec2 texcoord_out;\n";
+
+		vertSource += "void main(void) {\n";
+		vertSource += "gl_Position = projection * modelview * vec4(position.xy, 0, 1);\n";
+		vertSource += "texcoord_out = texcoord;\n";
+		vertSource += "}\n";
+
+		std::string fragSource = "";
+
+		fragSource += "#version 330 core\n";
+		fragSource += "out vec4 out_color;\n";
+
+		fragSource += "uniform int mode;\n";
+		fragSource += "uniform vec3 color;\n";
+		fragSource += "uniform sampler2D tex;\n";
+
+		fragSource += "in vec2 texcoord_out;\n";
+
+		fragSource += "void main(void) {\n";
+
+		fragSource += "if(mode == 0) {\n";
+		fragSource += "out_color = vec4(color.xyz, 1.0);\n";
+		fragSource += "} else if(mode == 1) {\n";
+		fragSource += "out_color = vec4(color.xyz, texture(tex, texcoord_out).r);\n";
+		fragSource += "}\n";
+
+		fragSource += "}\n";
+
+		vertShader = glCreateShader(GL_VERTEX_SHADER);
+		fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+		GLchar* shadersource = (GLchar*)vertSource.c_str();
+		glShaderSource(vertShader, 1, &shadersource, 0);
+		shadersource = (GLchar*)fragSource.c_str();
+		glShaderSource(fragShader, 1, &shadersource, 0);
+
+		glCompileShader(vertShader);
+
+		GLint compiled = 0;
+		glGetShaderiv(vertShader, GL_COMPILE_STATUS, &compiled);
+		if (compiled == GL_FALSE) {
+			GLint maxLength = 0;
+			glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+			GLchar* message = (GLchar*)malloc(sizeof(GLchar)*maxLength);
+			glGetShaderInfoLog(vertShader, maxLength, &maxLength, message);
+
+			std::cout << "Vertex Shader failed to compile:\n";
+			std::cout << message << "\n";
+
+			glDeleteShader(vertShader);
+			return;
+		}
+
+		glCompileShader(fragShader);
+
+		glGetShaderiv(fragShader, GL_COMPILE_STATUS, &compiled);
+		if (compiled == GL_FALSE) {
+			GLint maxLength = 0;
+			glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+			GLchar* message = (GLchar*)malloc(sizeof(GLchar)*maxLength);
+			glGetShaderInfoLog(fragShader, maxLength, &maxLength, message);
+
+			std::cout << "Fragment Shader failed to compile:\n";
+			std::cout << message << "\n";
+
+			glDeleteShader(fragShader);
+			return;
+		}
+
+		shaderProgram = glCreateProgram();
+
+		glAttachShader(shaderProgram, vertShader);
+		glAttachShader(shaderProgram, fragShader);
+
+		glBindAttribLocation(shaderProgram, 0, "position");
+		glBindAttribLocation(shaderProgram, 1, "texcoord");
+
+		glLinkProgram(shaderProgram);
+		glValidateProgram(shaderProgram);
+
+		modeLoc = glGetUniformLocation(shaderProgram, "mode");
+		colorLoc = glGetUniformLocation(shaderProgram, "color");
+		modelviewLoc = glGetUniformLocation(shaderProgram, "modelview");
+		projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+		texLoc = glGetUniformLocation(shaderProgram, "tex");
+
+		float* projectionMat = new float[16];
+		Utils::getOrthoMatrix(projectionMat, 0, m_width, 0, m_height, -1, 1);
+
+		glUseProgram(shaderProgram);
+
+		glUniform1i(texLoc, 0);
+		glUniformMatrix4fv(projectionLoc, 1, false, projectionMat);
+
+		glUseProgram(0);
+
+		m_modelview = new float[16];
 	}
 
 	void Renderer::reinit() {
-		glCallList(glInitList);
+		glViewport(0, 0, m_width, m_height);
+		
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void Renderer::clear(Color color) {
@@ -34,11 +202,39 @@ namespace glui {
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
-	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color* color) {
+	void Renderer::beginDraw() {
+		glBindVertexArray(quadVAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glUseProgram(shaderProgram);
+	}
+
+	void Renderer::setUniforms(int mode, float* modelview) {
+		glUniform1i(modeLoc, mode);
+		glUniform3f(colorLoc, 0, 0, 0);
+		glUniformMatrix4fv(modelviewLoc, 1, false, modelview);
+	}
+
+	void Renderer::setUniforms(int mode, float* modelview, glui::Color color) {
+		glUniform1i(modeLoc, mode);
+		glUniform3f(colorLoc, color.r, color.g, color.b);
+		glUniformMatrix4fv(modelviewLoc, 1, false, modelview);
+	}
+
+	void Renderer::endDraw() {
+		glUseProgram(0);
+		
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(0);
+		glBindVertexArray(0);
+	}
+
+	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color color) {
 		drawString(text, font->current, posx, posy, scale, font, color);
 	}
 
-	void Renderer::drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color* color) {
+	void Renderer::drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color color) {
 		Character** chars = (Character**)font->chars[num];
 
 		float xOff = 0;
@@ -46,7 +242,6 @@ namespace glui {
 
 		float s = scale/font->size;
 
-		glColor3f(color->r, color->g, color->b);
 		for (unsigned int i = 0; i < text.size();i++) {
 			char c = text.at(i);
 
@@ -61,6 +256,7 @@ namespace glui {
 			GLuint tex = car->tex;
 			
 			glBindTexture(GL_TEXTURE_2D, tex);
+			glActiveTexture(GL_TEXTURE0);
 
 			float h = car->sizey * s;
 			float w = car->sizex * s;
@@ -68,16 +264,19 @@ namespace glui {
 			float x = xOff + posx + car->offx * s;
 			float y = posy - (car->sizey - car->offy) * s - yOff;
 
-			glBegin(GL_QUADS);
-			glTexCoord2d(0.0, 1.0); glVertex2f(x    , y    );
-			glTexCoord2d(0.0, 0.0); glVertex2f(x    , y + h);
-			glTexCoord2d(1.0, 0.0); glVertex2f(x + w, y + h);
-			glTexCoord2d(1.0, 1.0); glVertex2f(x + w, y    );
-			glEnd();
+			Utils::getModelviewMatrix(m_modelview, x + w/2, y + h/2, w, h);
+			Renderer::setUniforms(1, m_modelview, color);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 			xOff += (car->advance >> 6) * s;
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void Renderer::drawRect(float x, float y, float w, float h, Color color) {
+		Utils::getModelviewMatrix(m_modelview, x + w / 2, y + h / 2, w, h);
+		Renderer::setUniforms(0, m_modelview, color);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

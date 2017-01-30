@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+#undef near
+#undef far
+
 namespace glui {
 	typedef struct Color {
 		float r, g, b;
@@ -62,4 +65,10 @@ namespace glui {
 		Color popupBackground;
 		Color popupText;
 	} Theme;
+
+	class Utils {
+	public:
+		static void getModelviewMatrix(float* vals, float x, float y, float w, float h);
+		static void getOrthoMatrix(float* vals, float left, float right, float bottom, float top, float near, float far);
+	};
 }

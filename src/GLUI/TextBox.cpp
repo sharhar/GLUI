@@ -155,6 +155,6 @@ namespace glui {
 		glEnd();
 		
 		//render text
-		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff, m_desc.style.size, m_desc.style.font, &(m_desc.theme.text));
+		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
 	}
 }

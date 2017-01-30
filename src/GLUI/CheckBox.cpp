@@ -77,6 +77,6 @@ namespace glui {
 
 		glPopMatrix();
 
-		Renderer::drawString(m_text, m_bounds.x + m_bounds.w + m_desc.outLineThickness + 3, m_bounds.y + m_desc.textStyle.size/10.0f, m_desc.textStyle.size, m_desc.textStyle.font, &(m_desc.theme.text));
+		Renderer::drawString(m_text, m_bounds.x + m_bounds.w + m_desc.outLineThickness + 3, m_bounds.y + m_desc.textStyle.size/10.0f, m_desc.textStyle.size, m_desc.textStyle.font, m_desc.theme.text);
 	}
 }

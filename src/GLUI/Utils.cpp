@@ -53,18 +53,14 @@ namespace glui {
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-			glPixelTransferf(GL_RED_BIAS, 1);
-			glPixelTransferf(GL_GREEN_BIAS, 1);
-			glPixelTransferf(GL_BLUE_BIAS, 1);
-
 			glTexImage2D(
 				GL_TEXTURE_2D,
 				0,
-				GL_RGBA,
+				GL_RGB,
 				face->glyph->bitmap.width,
 				face->glyph->bitmap.rows,
 				0,
-				GL_ALPHA,
+				GL_RED,
 				GL_UNSIGNED_BYTE,
 				face->glyph->bitmap.buffer
 				);
@@ -115,5 +111,49 @@ namespace glui {
 	void GLUIObject::setSize(Vector2f size) {
 		m_bounds.w = size.x;
 		m_bounds.h = size.y;
+	}
+
+	void Utils::getModelviewMatrix(float* vals, float x, float y, float w, float h) {
+		vals[0] = w;
+		vals[1] = 0;
+		vals[2] = 0;
+		vals[3] = 0;
+		
+		vals[4] = 0;
+		vals[5] = h;
+		vals[6] = 0;
+		vals[7] = 0;
+		
+		vals[8] = 0;
+		vals[9] = 0;
+		vals[10] = 1;
+		vals[11] = 0;
+
+		vals[12] = x;
+		vals[13] = y;
+		vals[14] = 0;
+		vals[15] = 1;
+	}
+
+	void Utils::getOrthoMatrix(float* vals, float left, float right, float bottom, float top, float near, float far) {
+		vals[0] = 2.0f / (right - left);
+		vals[1] = 0;
+		vals[2] = 0;
+		vals[3] = 0;
+
+		vals[4] = 0;
+		vals[5] = 2.0f / (top - bottom);
+		vals[6] = 0;
+		vals[7] = 0;
+
+		vals[8] = 0;
+		vals[9] = 0;
+		vals[10] = -2.0f / (far - near);
+		vals[11] = 0;
+
+		vals[12] = -(right + left) / (right - left);
+		vals[13] = -(top + bottom) / (top - bottom);
+		vals[14] = -(far + near) / (far - near);
+		vals[15] = 1;
 	}
 }
