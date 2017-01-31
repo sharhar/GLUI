@@ -4,6 +4,7 @@
 #include <thread>
 
 namespace glui {
+    
 #ifdef _DEBUG
 	const char*
 		getGLSourceStr(GLenum source)

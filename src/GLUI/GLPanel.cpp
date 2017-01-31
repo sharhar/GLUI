@@ -3,10 +3,9 @@
 
 namespace glui {
 
-	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> initGLFunc, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme) :
+	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme) :
 		GLUIObject(bounds,layout){
 		m_renderFunc = renderFunc;
-		m_initGLFunc = initGLFunc;
 		m_inputMouseFunc = inputMouseFunc;
 		m_fboSize = fboSize;
 		m_theme = theme;
@@ -51,11 +50,6 @@ namespace glui {
 		m_FBO = fbo;
 		m_tex = tex;
 		m_dtex = dtex;
-
-		m_glInitList = glGenLists(1);
-		glNewList(m_glInitList, GL_COMPILE);
-		m_initGLFunc();
-		glEndList();
 	}
 
 	void GLPanel::poll() {
@@ -97,8 +91,6 @@ namespace glui {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 		glViewport(0, 0, m_fboSize.x, m_fboSize.y);
 
-		glCallList(m_glInitList);
-
 		m_renderFunc();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -107,27 +99,8 @@ namespace glui {
 	}
 
 	void GLPanel::render() {
-		glColor3f(m_theme.outline.r, m_theme.outline.g, m_theme.outline.b);
-
-		glBegin(GL_QUADS);
-		glVertex2f(m_bounds.x - 3, m_bounds.y + m_bounds.h + 3);
-		glVertex2f(m_bounds.x + m_bounds.w + 3, m_bounds.y + m_bounds.h + 3);
-		glVertex2f(m_bounds.x + m_bounds.w + 3, m_bounds.y - 3);
-		glVertex2f(m_bounds.x - 3, m_bounds.y - 3);
-		glEnd();
-		
-		glBindTexture(GL_TEXTURE_2D, m_tex);
-
-		glColor3f(1, 1, 1);
-
-		glBegin(GL_QUADS);
-		glTexCoord2d(0.0, 1.0); glVertex2f(m_bounds.x             , m_bounds.y + m_bounds.h);
-		glTexCoord2d(1.0, 1.0); glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
-		glTexCoord2d(1.0, 0.0); glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y             );
-		glTexCoord2d(0.0, 0.0); glVertex2f(m_bounds.x             , m_bounds.y             );
-		glEnd();
-
-		glBindTexture(GL_TEXTURE_2D, 0);
+        Renderer::drawRect(m_bounds.x - 3, m_bounds.y - 3, m_bounds.w + 3*2, m_bounds.h + 3*2, m_theme.outline);
+        Renderer::drawRect(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, m_tex);
 	}
 
 	void GLPanel::renderDepth() {

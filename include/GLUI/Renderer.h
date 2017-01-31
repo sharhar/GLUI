@@ -27,6 +27,8 @@ namespace glui {
 		static void drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color color);
 		static void drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color color);
 		static void drawRect(float x, float y, float w, float h, Color color);
+        static void drawRect(float x, float y, float w, float h, GLuint tex);
+        static void drawRect(float x, float y, float w, float h, float r, Color color);
         static void setProjection(float left, float right, float bottom, float top, float near, float far);
 	};
 }

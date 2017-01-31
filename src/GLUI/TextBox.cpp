@@ -121,40 +121,32 @@ namespace glui {
 
 			char c = m_text.at(i);
 
-			Character* car = chars[c];
+			Character* car = chars[(int)c];
 
 			xOff += (car->advance >> 6) * s;
 		}
 
 		float yOff = (m_bounds.h - m_desc.style.size) / 2.0f;
 
-		//render text box
-		glBegin(GL_QUADS);
 		//Render the outline
-		glColor3f(m_desc.theme.outline.r, m_desc.theme.outline.g, m_desc.theme.outline.b);
-		glVertex2f(m_bounds.x - m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth);
-		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth);
-		glVertex2f(m_bounds.x + m_bounds.w + m_desc.outLineWidth, m_bounds.y + m_bounds.h + m_desc.outLineWidth);
-		glVertex2f(m_bounds.x - m_desc.outLineWidth, m_bounds.y + m_bounds.h + m_desc.outLineWidth);
+        
+        Renderer::drawRect(m_bounds.x - m_desc.outLineWidth, m_bounds.y - m_desc.outLineWidth,
+                           m_bounds.w + m_desc.outLineWidth*2, m_bounds.h + m_desc.outLineWidth*2, m_desc.theme.outline);
 
+        
 		//Render the textbox
-		glColor3f(m_desc.theme.body.r, m_desc.theme.body.g, m_desc.theme.body.b);
-		glVertex2f(m_bounds.x, m_bounds.y);
-		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y);
-		glVertex2f(m_bounds.x + m_bounds.w, m_bounds.y + m_bounds.h);
-		glVertex2f(m_bounds.x, m_bounds.y + m_bounds.h);
-
+        
+        Renderer::drawRect(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, m_desc.theme.body);
+        
+        
 		if (m_renderCursor) {
 			//Render the cursor
-			glColor3f(m_desc.theme.outline.r, m_desc.theme.outline.g, m_desc.theme.outline.b);
-			glVertex2f(m_bounds.x + m_desc.outLineWidth + xOff, m_bounds.y + m_desc.outLineWidth);
-			glVertex2f(m_bounds.x + m_desc.outLineWidth + m_desc.cursorWidth + xOff, m_bounds.y + m_desc.outLineWidth);
-			glVertex2f(m_bounds.x + m_desc.outLineWidth + m_desc.cursorWidth + xOff, m_bounds.y + m_bounds.h - m_desc.outLineWidth);
-			glVertex2f(m_bounds.x + m_desc.outLineWidth + xOff, m_bounds.y + m_bounds.h - m_desc.outLineWidth);
-		}
-		glEnd();
+            Renderer::drawRect(m_bounds.x + m_desc.outLineWidth + xOff, m_bounds.y + m_desc.outLineWidth,
+                               m_desc.cursorWidth, m_bounds.h - m_desc.outLineWidth*2, m_desc.theme.outline);
+        }
 		
 		//render text
-		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
+		Renderer::drawString(m_text, m_bounds.x + m_desc.outLineWidth, m_bounds.y + m_desc.outLineWidth + yOff,
+                             m_desc.style.size, m_desc.style.font, m_desc.theme.text);
 	}
 }

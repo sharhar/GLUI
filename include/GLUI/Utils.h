@@ -69,6 +69,7 @@ namespace glui {
 	class Utils {
 	public:
 		static void getModelviewMatrix(float* vals, float x, float y, float w, float h);
+        static void getModelviewMatrix(float* vals, float x, float y, float w, float h, float r);
 		static void getOrthoMatrix(float* vals, float left, float right, float bottom, float top, float near, float far);
 	};
 }

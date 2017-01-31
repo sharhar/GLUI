@@ -1,5 +1,8 @@
 #include <GLUI/GLUI.h>
 #include <GLUIExt.h>
+#include <math.h>
+
+#define DEG_TO_RAD 0.0174532925199
 
 namespace glui {
 
@@ -75,7 +78,7 @@ namespace glui {
 			car->offy = face->glyph->bitmap_top;
 			car->advance = face->glyph->advance.x;
 
-			t_chars[c] = car;
+			t_chars[(int)c] = car;
 		}
 
 		if (chars.size() <= num) {
@@ -134,6 +137,32 @@ namespace glui {
 		vals[14] = 0;
 		vals[15] = 1;
 	}
+    
+    void Utils::getModelviewMatrix(float* vals, float x, float y, float w, float h, float r) {
+        float c = cos(r*DEG_TO_RAD);
+        float s = sin(r*DEG_TO_RAD);
+        
+        vals[0] = w*c;
+        vals[1] = w*s;
+        vals[2] = 0;
+        vals[3] = 0;
+        
+        vals[4] = -h*s;
+        vals[5] = h*c;
+        vals[6] = 0;
+        vals[7] = 0;
+        
+        vals[8] = 0;
+        vals[9] = 0;
+        vals[10] = 1;
+        vals[11] = 0;
+        
+        vals[12] = x;
+        vals[13] = y;
+        vals[14] = 0;
+        vals[15] = 1;
+    }
+
 
 	void Utils::getOrthoMatrix(float* vals, float left, float right, float bottom, float top, float near, float far) {
 		vals[0] = 2.0f / (right - left);

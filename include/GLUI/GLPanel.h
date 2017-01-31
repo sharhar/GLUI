@@ -20,20 +20,17 @@ namespace glui {
 	private:
 		unsigned int m_FBO;
 		unsigned int m_tex;
-		unsigned int m_dtex;
-		unsigned int m_glInitList;
+        unsigned int m_dtex;
 		std::function<void(void)> m_renderFunc;
-		std::function<void(void)> m_initGLFunc;
 		std::function<void(GLPanelMouseData* data)> m_inputMouseFunc;
-
-		GLFuncs* m_glFuncs;
+        
 		Theme m_theme;
 
 		float m_prevScroll;
 		GLPanelMouseData* m_mouseData;
 		Vector2f m_fboSize;
 	public:
-		GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> initGLFunc, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme);
+		GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme);
 		void poll() override;
 		void render() override;
 		void renderDepth();

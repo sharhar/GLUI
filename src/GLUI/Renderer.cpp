@@ -114,7 +114,9 @@ namespace glui {
 		fragSource += "out_color = vec4(color.xyz, 1.0);\n";
 		fragSource += "} else if(mode == 1) {\n";
 		fragSource += "out_color = vec4(color.xyz, texture(tex, texcoord_out).r);\n";
-		fragSource += "}\n";
+		fragSource += "} else if(mode == 2) {\n";
+        fragSource += "out_color = texture(tex, texcoord_out);\n";
+        fragSource += "}\n";
 
 		fragSource += "}\n";
 
@@ -252,7 +254,7 @@ namespace glui {
 				continue;
 			}
 
-			Character* car = chars[c];
+			Character* car = chars[(int)c];
 
 			GLuint tex = car->tex;
 			
@@ -280,6 +282,21 @@ namespace glui {
 		Renderer::setUniforms(0, m_modelview, color);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
+    
+    void Renderer::drawRect(float x, float y, float w, float h, GLuint tex) {
+        glBindTexture(GL_TEXTURE_2D, tex);
+        glActiveTexture(GL_TEXTURE0);
+        
+        Utils::getModelviewMatrix(m_modelview, x + w / 2, y + h / 2, w, h);
+        Renderer::setUniforms(2, m_modelview);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    
+    void Renderer::drawRect(float x, float y, float w, float h, float r, Color color) {
+        Utils::getModelviewMatrix(m_modelview, x, y, w, h, r);
+        Renderer::setUniforms(0, m_modelview, color);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
     
     void Renderer::setProjection(float left, float right, float bottom, float top, float near, float far) {
         Utils::getOrthoMatrix(m_projection, left, right, bottom, top, near, far);

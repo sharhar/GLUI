@@ -16,7 +16,7 @@ namespace glui{
 		std::function<void(float)> mouseScroll;
 	} WindowCallbacks;
 
-	typedef struct PopupDescriptor;
+    struct PopupDescriptor;
 
 	class Window {
 	private:
