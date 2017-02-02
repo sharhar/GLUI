@@ -25,6 +25,7 @@ namespace glui {
 		static void endDraw();
 
 		static void drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color color);
+		static void drawStringCustom(const std::string& text, GLuint modelviewLoc, float posx, float posy, float scale, Font* font, Color color);
 		static void drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color color);
 		static void drawRect(float x, float y, float w, float h, Color color);
         static void drawRect(float x, float y, float w, float h, GLuint tex);

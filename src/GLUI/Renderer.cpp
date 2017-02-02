@@ -307,4 +307,46 @@ namespace glui {
         
         glUseProgram(0);
     }
+    
+    void Renderer::drawStringCustom(const std::string& text, GLuint modelviewLoc, float posx, float posy, float scale, Font* font, Color color) {
+        Character** chars = (Character**)font->chars[font->current];
+        
+        float xOff = 0;
+        float yOff = 0;
+        
+        float s = scale/font->size;
+        
+        for (unsigned int i = 0; i < text.size();i++) {
+            char c = text.at(i);
+            
+            if (c == '\n') {
+                yOff += scale;
+                xOff = 0;
+                continue;
+            }
+            
+            Character* car = chars[(int)c];
+            
+            GLuint tex = car->tex;
+            
+            glBindTexture(GL_TEXTURE_2D, tex);
+            glActiveTexture(GL_TEXTURE0);
+            
+            float h = car->sizey * s;
+            float w = car->sizex * s;
+            
+            float x = xOff + posx + car->offx * s;
+            float y = posy - (car->sizey - car->offy) * s - yOff;
+            
+            Utils::getModelviewMatrix(m_modelview, x + w/2, y + h/2, w, h);
+            //Renderer::setUniforms(1, m_modelview, color);
+            glUniformMatrix4fv(modelviewLoc, 1, false, m_modelview);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            
+            xOff += (car->advance >> 6) * s;
+        }
+        
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+    }
 }
