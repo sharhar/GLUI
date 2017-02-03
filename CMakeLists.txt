@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8.11)
 
 set(EXT_EXTRACT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext")
 
-
-
 project(GLUI)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -22,12 +20,9 @@ set(FT_URL "http://nongnu.askapache.com//freetype/${FT_SOURCE_NAME}.tar.gz")
 set(FT_DOWNLOAD_PATH "${CMAKE_SOURCE_DIR}/${FT_SOURCE_NAME}.tar.gz")
 set(FT_SOURCE_DIR "${EXT_EXTRACT_DIR}/${FT_SOURCE_NAME}")
 
-#http://nongnu.askapache.com//freetype/freetype-2.6.tar.gz
-
 find_package(OpenGL REQUIRED)
 
 if(NOT MSVC)
-
 	include(CheckCXXCompilerFlag)
 	CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 	CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
@@ -48,14 +43,6 @@ if(NOT EXISTS ${EXT_EXTRACT_DIR})
 		COMMAND ${CMAKE_COMMAND} -E make_directory "ext"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
-endif()
-
-if(NOT EXISTS "${EXT_EXTRACT_DIR}/glcorearb/glcorearb.h")
-	message("Did not find glcorearb.h...")
-	message("Downloading glcorearb.h...")
-	file(DOWNLOAD "https://www.opengl.org/registry/api/GL/glcorearb.h" "${EXT_EXTRACT_DIR}/glcorearb/glcorearb.h")
-else()
-	message("Found glcorearb.h...")
 endif()
 
 if(NOT EXISTS ${GLFW_SOURCE_DIR})
@@ -128,14 +115,11 @@ include_directories(
 	"${GLFW_SOURCE_DIR}/include"
 	"${FT_SOURCE_DIR}/include"
 	"${FT_SOURCE_DIR}/freetype-2.6/devel"
-	"${EXT_EXTRACT_DIR}/glcorearb"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
 add_subdirectory("${GLFW_SOURCE_DIR}")
