@@ -36,31 +36,22 @@ namespace glui {
 		return types[str_idx];
 	}
 
-	const char*
-		getGLSeverityStr(GLenum severity)
-	{
-		static const char* severities[] = {
-			"High", "Medium", "Low", "Unknown"
-		};
-
-		int str_idx =
-			min(severity - GL_DEBUG_SEVERITY_HIGH,
-				sizeof(severities) / sizeof(const char *));
-
-		return severities[str_idx];
-	}
-
 	static void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id,
 		GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
 		
 		std::cout << "OpenGL Error:\n";
 		std::cout << "=============\n";
 		std::cout << " Object ID: " << id << "\n";
-		//std::cout << " Severity: " << getGLSeverityStr(severity) << "\n";
 		std::cout << " Type: " << getGLTypeStr(type) << "\n";
 		std::cout << " Source: " << getGLSourceStr(source) << "\n";
 		std::cout << " Message: " << message << "\n\n";
 	}
+
+	void glfwDebugErrorCallback(int error, const char* description) {
+		std::cout << "GLFW Error: " << error << "\n";
+		std::cout << " Message: " << description << "\n";
+	}
+
 #endif
 
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -123,7 +114,11 @@ namespace glui {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+#ifdef __APPLE__
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#else
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+#endif
 #ifdef _DEBUG
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
@@ -134,6 +129,7 @@ namespace glui {
 			std::cout << "Could not load OpenGL!\n";
 			exit(-1);
 		}
+
 #ifdef _DEBUG
 		PFNGLDEBUGMESSAGECALLBACKPROC pfnDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC)
 			glfwGetProcAddress("glDebugMessageCallback");
@@ -152,6 +148,9 @@ namespace glui {
 		
 		m_focused = 1;
 
+#ifdef _DEBUG
+		glfwSetErrorCallback(glfwDebugErrorCallback);
+#endif
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		glfwSetCursorPosCallback(window, mousePosCallback);
