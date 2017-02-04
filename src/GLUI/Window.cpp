@@ -200,14 +200,11 @@ namespace glui {
 
 		input::InputData::mouseLeftDown = false;
         
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-            
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        
         GLFWwindow* window = glfwCreateWindow(desc.width, desc.height, desc.title, NULL, desc.window->getGLFWwindow());
         glfwMakeContextCurrent(window);
+
+		RendererGLData* renderData = Renderer::createRenderData(desc.width, desc.height);
+		Renderer::setRenderData(renderData);
 
         glfwSetWindowPos(window,
             (desc.window->getWidth() - desc.width) / 2 + desc.window->getX(),
@@ -218,6 +215,10 @@ namespace glui {
         glfwSetCursorPosCallback(window, mousePosCallback);
         glfwSetCharCallback(window, textCallBack);
         glfwSetScrollCallback(window, mouseScrollCallback);
+
+		if (desc.icon != NULL) {
+			glfwSetWindowIcon(window, desc.iconNum, desc.icon);
+		}
 
         Renderer::setProjection(0, desc.width, 0, desc.height, -1, 1);
         
@@ -249,8 +250,7 @@ namespace glui {
                 buttons.push_back(button);
             }
         }
-        
-            
+
         glClearColor(theme.popupBackground.r, theme.popupBackground.g, theme.popupBackground.b, 1);
         while (!glfwWindowShouldClose(window) && result == -1) {
             glfwPollEvents();
@@ -262,19 +262,18 @@ namespace glui {
                     buttons[i]->poll();
                 }
             }
-            
+
             Renderer::beginDraw();
             
-            Renderer::drawString(desc.text, 10, desc.height - desc.bodyTextStyle.font->size - 10, desc.bodyTextStyle.size , desc.bodyTextStyle.font, theme.popupText);
+			Renderer::drawString(desc.text, 10, desc.height - desc.bodyTextStyle.font->size - 10, desc.bodyTextStyle.size , desc.bodyTextStyle.font, theme.popupText);
 
             if (desc.btnNum > 0) {
                 for (int i = 0; i < desc.btnNum; i++) {
                         buttons[i]->render();
                 }
-                
             }
-            
-            Renderer::endDraw();
+			
+			Renderer::endDraw();
 
             glfwSwapBuffers(window);
         }
@@ -283,12 +282,15 @@ namespace glui {
             result = 0;
         }
         
+		Renderer::deleteRenderData(renderData);
+
         glfwDestroyWindow(window);
-        
+
         glfwMakeContextCurrent(desc.window->getGLFWwindow());
-        
+		
+		Renderer::resetRenderData();
         Renderer::setProjection(0, desc.window->getWidth(), 0, desc.window->getHeight(), -1, 1);
-        
+       
 		input::InputData::mouseLeftDown = false;
 
 		return result;

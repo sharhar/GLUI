@@ -56,5 +56,7 @@ namespace glui{
 		Window* window;
 		TextStyle bodyTextStyle;
 		TextStyle buttonTextStyle;
+		GLFWimage* icon;
+		int iconNum;
 	} PopupDescriptor;
 }

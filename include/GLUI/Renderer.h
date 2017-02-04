@@ -5,17 +5,24 @@
 #include <string>
 
 namespace glui {
+	typedef struct RendererGLData {
+		GLuint quadVAO, quadVBOPosition, quadVBOTexCoord;
+		GLuint vertShader, fragShader, shaderProgram;
+		GLuint modeLoc, colorLoc, modelviewLoc, projectionLoc, texLoc;
+		float* modelview;
+		float* projection;
+	} RendererGLData;
+	
 	class Renderer {
 	private:
 		static int m_width, m_height;
 
-		static GLuint quadVAO, quadVBOPosition, quadVBOTexCoord;
-		static GLuint vertShader, fragShader, shaderProgram;
-		static GLuint modeLoc, colorLoc, modelviewLoc, projectionLoc, texLoc;
-        static float* m_modelview;
-        static float* m_projection;
+		static RendererGLData* defaultRenderData;
+		static RendererGLData* currentRenderData;
 	public:
 		static void init(Window* window);
+		static RendererGLData* createRenderData(int width, int height);
+		static void deleteRenderData(RendererGLData* renderData);
 		static void reinit();
 		static void clear(Color color);
 
@@ -24,6 +31,8 @@ namespace glui {
 		static void setUniforms(int mode, float* modelview, glui::Color color);
 		static void endDraw();
 
+		static void setRenderData(RendererGLData* renderData);
+		static void resetRenderData();
 		static void drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color color);
 		static void drawStringCustom(const std::string& text, GLuint modelviewLoc, float posx, float posy, float scale, Font* font, Color color);
 		static void drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color color);

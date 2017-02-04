@@ -4,25 +4,21 @@
 namespace glui {
 	int Renderer::m_width = 0;
 	int Renderer::m_height = 0;
-	GLuint Renderer::quadVAO = 0;
-	GLuint Renderer::quadVBOPosition = 0;
-	GLuint Renderer::quadVBOTexCoord = 0;
-	GLuint Renderer::vertShader = 0;
-	GLuint Renderer::fragShader = 0;
-	GLuint Renderer::shaderProgram = 0;
-	GLuint Renderer::modeLoc = 0;
-	GLuint Renderer::colorLoc = 0;
-	GLuint Renderer::modelviewLoc = 0;
-	GLuint Renderer::projectionLoc = 0;
-	GLuint Renderer::texLoc = 0;
-	float* Renderer::m_modelview = NULL;
-    float* Renderer::m_projection = NULL;
+	RendererGLData* Renderer::defaultRenderData = 0;
+	RendererGLData* Renderer::currentRenderData = 0;
 
 	void Renderer::init(Window* window) {
 		m_width = window->getWidth();
 		m_height = window->getHeight();
 		
 		reinit();
+
+		defaultRenderData = createRenderData(m_width, m_height);
+		setRenderData(defaultRenderData);
+	}
+
+	RendererGLData* Renderer::createRenderData(int width, int height) {
+		RendererGLData* result = (RendererGLData*)malloc(sizeof(RendererGLData));
 
 		GLfloat* verts = (GLfloat*)malloc(sizeof(GLfloat) * 6 * 2);
 
@@ -31,16 +27,16 @@ namespace glui {
 
 		verts[2] = 0.5f;
 		verts[3] = -0.5f;
-		
+
 		verts[4] = 0.5f;
 		verts[5] = 0.5f;
-		
+
 		verts[6] = -0.5f;
 		verts[7] = -0.5f;
-		
+
 		verts[8] = -0.5f;
 		verts[9] = 0.5f;
-		
+
 		verts[10] = 0.5f;
 		verts[11] = 0.5f;
 
@@ -64,17 +60,17 @@ namespace glui {
 		texCoords[10] = 1;
 		texCoords[11] = 0;
 
-		glGenVertexArrays(1, &quadVAO);
-		glBindVertexArray(quadVAO);
+		glGenVertexArrays(1, &result->quadVAO);
+		glBindVertexArray(result->quadVAO);
 
-		glGenBuffers(1, &quadVBOPosition);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBOPosition);
+		glGenBuffers(1, &result->quadVBOPosition);
+		glBindBuffer(GL_ARRAY_BUFFER, result->quadVBOPosition);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 2, verts, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glGenBuffers(1, &quadVBOTexCoord);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBOTexCoord);
+		glGenBuffers(1, &result->quadVBOTexCoord);
+		glBindBuffer(GL_ARRAY_BUFFER, result->quadVBOTexCoord);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 2, texCoords, GL_STATIC_DRAW);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -115,81 +111,100 @@ namespace glui {
 		fragSource += "} else if(mode == 1) {\n";
 		fragSource += "out_color = vec4(color.xyz, texture(tex, texcoord_out).r);\n";
 		fragSource += "} else if(mode == 2) {\n";
-        fragSource += "out_color = texture(tex, texcoord_out);\n";
-        fragSource += "}\n";
+		fragSource += "out_color = texture(tex, texcoord_out);\n";
+		fragSource += "}\n";
 
 		fragSource += "}\n";
 
-		vertShader = glCreateShader(GL_VERTEX_SHADER);
-		fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+		result->vertShader = glCreateShader(GL_VERTEX_SHADER);
+		result->fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 		GLchar* shadersource = (GLchar*)vertSource.c_str();
-		glShaderSource(vertShader, 1, &shadersource, 0);
+		glShaderSource(result->vertShader, 1, &shadersource, 0);
 		shadersource = (GLchar*)fragSource.c_str();
-		glShaderSource(fragShader, 1, &shadersource, 0);
+		glShaderSource(result->fragShader, 1, &shadersource, 0);
 
-		glCompileShader(vertShader);
+		glCompileShader(result->vertShader);
 
 		GLint compiled = 0;
-		glGetShaderiv(vertShader, GL_COMPILE_STATUS, &compiled);
+		glGetShaderiv(result->vertShader, GL_COMPILE_STATUS, &compiled);
 		if (compiled == GL_FALSE) {
 			GLint maxLength = 0;
-			glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &maxLength);
+			glGetShaderiv(result->vertShader, GL_INFO_LOG_LENGTH, &maxLength);
 
 			GLchar* message = (GLchar*)malloc(sizeof(GLchar)*maxLength);
-			glGetShaderInfoLog(vertShader, maxLength, &maxLength, message);
+			glGetShaderInfoLog(result->vertShader, maxLength, &maxLength, message);
 
 			std::cout << "Vertex Shader failed to compile:\n";
 			std::cout << message << "\n";
 
-			glDeleteShader(vertShader);
-			return;
+			glDeleteShader(result->vertShader);
+			return NULL;
 		}
 
-		glCompileShader(fragShader);
+		glCompileShader(result->fragShader);
 
-		glGetShaderiv(fragShader, GL_COMPILE_STATUS, &compiled);
+		glGetShaderiv(result->fragShader, GL_COMPILE_STATUS, &compiled);
 		if (compiled == GL_FALSE) {
 			GLint maxLength = 0;
-			glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &maxLength);
+			glGetShaderiv(result->fragShader, GL_INFO_LOG_LENGTH, &maxLength);
 
 			GLchar* message = (GLchar*)malloc(sizeof(GLchar)*maxLength);
-			glGetShaderInfoLog(fragShader, maxLength, &maxLength, message);
+			glGetShaderInfoLog(result->fragShader, maxLength, &maxLength, message);
 
 			std::cout << "Fragment Shader failed to compile:\n";
 			std::cout << message << "\n";
 
-			glDeleteShader(fragShader);
-			return;
+			glDeleteShader(result->fragShader);
+			return NULL;
 		}
 
-		shaderProgram = glCreateProgram();
+		result->shaderProgram = glCreateProgram();
 
-		glAttachShader(shaderProgram, vertShader);
-		glAttachShader(shaderProgram, fragShader);
+		glAttachShader(result->shaderProgram, result->vertShader);
+		glAttachShader(result->shaderProgram, result->fragShader);
 
-		glBindAttribLocation(shaderProgram, 0, "position");
-		glBindAttribLocation(shaderProgram, 1, "texcoord");
+		glBindAttribLocation(result->shaderProgram, 0, "position");
+		glBindAttribLocation(result->shaderProgram, 1, "texcoord");
 
-		glLinkProgram(shaderProgram);
-		glValidateProgram(shaderProgram);
+		glLinkProgram(result->shaderProgram);
+		glValidateProgram(result->shaderProgram);
 
-		modeLoc = glGetUniformLocation(shaderProgram, "mode");
-		colorLoc = glGetUniformLocation(shaderProgram, "color");
-		modelviewLoc = glGetUniformLocation(shaderProgram, "modelview");
-		projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-		texLoc = glGetUniformLocation(shaderProgram, "tex");
+		result->modeLoc = glGetUniformLocation(result->shaderProgram, "mode");
+		result->colorLoc = glGetUniformLocation(result->shaderProgram, "color");
+		result->modelviewLoc = glGetUniformLocation(result->shaderProgram, "modelview");
+		result->projectionLoc = glGetUniformLocation(result->shaderProgram, "projection");
+		result->texLoc = glGetUniformLocation(result->shaderProgram, "tex");
 
-		m_projection = new float[16];
-		Utils::getOrthoMatrix(m_projection, 0, m_width, 0, m_height, -1, 1);
+		result->projection = new float[16];
+		Utils::getOrthoMatrix(result->projection, 0, width, 0, height, -1, 1);
 
-		glUseProgram(shaderProgram);
+		glUseProgram(result->shaderProgram);
 
-		glUniform1i(texLoc, 0);
-		glUniformMatrix4fv(projectionLoc, 1, false, m_projection);
+		glUniform1i(result->texLoc, 0);
+		glUniformMatrix4fv(result->projectionLoc, 1, false, result->projection);
 
 		glUseProgram(0);
 
-		m_modelview = new float[16];
+		result->modelview = new float[16];
+
+		return result;
+	}
+
+	void Renderer::deleteRenderData(RendererGLData* renderData) {
+		delete[] renderData->modelview;
+		delete[] renderData->projection;
+
+		glDetachShader(renderData->shaderProgram, renderData->vertShader);
+		glDetachShader(renderData->shaderProgram, renderData->fragShader);
+		glDeleteShader(renderData->vertShader);
+		glDeleteShader(renderData->fragShader);
+		glDeleteProgram(renderData->shaderProgram);
+
+		glDeleteBuffers(1, &renderData->quadVBOPosition);
+		glDeleteBuffers(1, &renderData->quadVBOTexCoord);
+		glDeleteVertexArrays(1, &renderData->quadVAO);
+
+		free(renderData);
 	}
 
 	void Renderer::reinit() {
@@ -206,23 +221,23 @@ namespace glui {
 	}
 
 	void Renderer::beginDraw() {
-		glBindVertexArray(quadVAO);
+		glBindVertexArray(currentRenderData->quadVAO);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
-		glUseProgram(shaderProgram);
+		glUseProgram(currentRenderData->shaderProgram);
 	}
 
 	void Renderer::setUniforms(int mode, float* modelview) {
-		glUniform1i(modeLoc, mode);
-		glUniform3f(colorLoc, 0, 0, 0);
-		glUniformMatrix4fv(modelviewLoc, 1, false, modelview);
+		glUniform1i(currentRenderData->modeLoc, mode);
+		glUniform3f(currentRenderData->colorLoc, 0, 0, 0);
+		glUniformMatrix4fv(currentRenderData->modelviewLoc, 1, false, modelview);
 	}
 
 	void Renderer::setUniforms(int mode, float* modelview, glui::Color color) {
-		glUniform1i(modeLoc, mode);
-		glUniform3f(colorLoc, color.r, color.g, color.b);
-		glUniformMatrix4fv(modelviewLoc, 1, false, modelview);
+		glUniform1i(currentRenderData->modeLoc, mode);
+		glUniform3f(currentRenderData->colorLoc, color.r, color.g, color.b);
+		glUniformMatrix4fv(currentRenderData->modelviewLoc, 1, false, modelview);
 	}
 
 	void Renderer::endDraw() {
@@ -231,6 +246,14 @@ namespace glui {
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(0);
 		glBindVertexArray(0);
+	}
+
+	void Renderer::setRenderData(RendererGLData* renderData) {
+		currentRenderData = renderData;
+	}
+	
+	void Renderer::resetRenderData() {
+		setRenderData(defaultRenderData);
 	}
 
 	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color color) {
@@ -267,8 +290,8 @@ namespace glui {
 			float x = xOff + posx + car->offx * s;
 			float y = posy - (car->sizey - car->offy) * s - yOff;
 
-			Utils::getModelviewMatrix(m_modelview, x + w/2, y + h/2, w, h);
-			Renderer::setUniforms(1, m_modelview, color);
+			Utils::getModelviewMatrix(currentRenderData->modelview, x + w/2, y + h/2, w, h);
+			Renderer::setUniforms(1, currentRenderData->modelview, color);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 			xOff += (car->advance >> 6) * s;
@@ -278,8 +301,8 @@ namespace glui {
 	}
 
 	void Renderer::drawRect(float x, float y, float w, float h, Color color) {
-		Utils::getModelviewMatrix(m_modelview, x + w / 2, y + h / 2, w, h);
-		Renderer::setUniforms(0, m_modelview, color);
+		Utils::getModelviewMatrix(currentRenderData->modelview, x + w / 2, y + h / 2, w, h);
+		Renderer::setUniforms(0, currentRenderData->modelview, color);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
     
@@ -287,24 +310,22 @@ namespace glui {
         glBindTexture(GL_TEXTURE_2D, tex);
         glActiveTexture(GL_TEXTURE0);
         
-        Utils::getModelviewMatrix(m_modelview, x + w / 2, y + h / 2, w, h);
-        Renderer::setUniforms(2, m_modelview);
+        Utils::getModelviewMatrix(currentRenderData->modelview, x + w / 2, y + h / 2, w, h);
+        Renderer::setUniforms(2, currentRenderData->modelview);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
     
     void Renderer::drawRect(float x, float y, float w, float h, float r, Color color) {
-        Utils::getModelviewMatrix(m_modelview, x, y, w, h, r);
-        Renderer::setUniforms(0, m_modelview, color);
+        Utils::getModelviewMatrix(currentRenderData->modelview, x, y, w, h, r);
+        Renderer::setUniforms(0, currentRenderData->modelview, color);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
     
     void Renderer::setProjection(float left, float right, float bottom, float top, float near, float far) {
-        Utils::getOrthoMatrix(m_projection, left, right, bottom, top, near, far);
+        Utils::getOrthoMatrix(currentRenderData->projection, left, right, bottom, top, near, far);
         
-        glUseProgram(shaderProgram);
-        
-        glUniformMatrix4fv(projectionLoc, 1, false, m_projection);
-        
+        glUseProgram(currentRenderData->shaderProgram);
+        glUniformMatrix4fv(currentRenderData->projectionLoc, 1, false, currentRenderData->projection);
         glUseProgram(0);
     }
     
@@ -338,9 +359,8 @@ namespace glui {
             float x = xOff + posx + car->offx * s;
             float y = posy - (car->sizey - car->offy) * s - yOff;
             
-            Utils::getModelviewMatrix(m_modelview, x + w/2, y + h/2, w, h);
-            //Renderer::setUniforms(1, m_modelview, color);
-            glUniformMatrix4fv(modelviewLoc, 1, false, m_modelview);
+            Utils::getModelviewMatrix(currentRenderData->modelview, x + w/2, y + h/2, w, h);
+            glUniformMatrix4fv(modelviewLoc, 1, false, currentRenderData->modelview);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             
             xOff += (car->advance >> 6) * s;
