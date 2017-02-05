@@ -16,9 +16,9 @@ namespace glui {
 	class Renderer {
 	private:
 		static int m_width, m_height;
-
-		static RendererGLData* defaultRenderData;
 	public:
+		static RendererGLData* defaultRenderData;
+
 		static void init(Window* window);
 		static RendererGLData* createRenderData(int width, int height);
 		static void deleteRenderData(RendererGLData* renderData);

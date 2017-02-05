@@ -85,8 +85,10 @@ namespace glui {
 			win->window->m_focused = focused;
 		}
 		
-		input::InputData::windowID = win->windowID;
-	}
+        if(focused == GLFW_TRUE) {
+            input::InputData::windowID = win->windowID;
+        }
+    }
 
 	void posCallback(GLFWwindow* window, int xpos, int ypos) {
 		WindowUserPointer* win = (WindowUserPointer*)glfwGetWindowUserPointer(window);
@@ -197,7 +199,7 @@ namespace glui {
 					handle->window = NULL;
 					handle->thread->join();
 					delete handle->thread;
-					handle->thread == NULL;
+					handle->thread = NULL;
 				}
 			}
 		}
@@ -219,7 +221,21 @@ namespace glui {
 	}
 
 	void Window::destroy() {
-		glfwDestroyWindow(m_window);
+        if (m_popups.size() > 0) {
+            for (int i = 0; i < m_popups.size();i++) {
+                PopupHandle* handle = m_popups[i];
+                if (handle->closed && handle->window != NULL) {
+                    glfwSetWindowShouldClose(handle->window, GLFW_TRUE);
+                    handle->thread->join();
+                    delete handle->thread;
+                    glfwDestroyWindow(handle->window);
+                    handle->window = NULL;
+                    handle->thread = NULL;
+                }
+            }
+        }
+        
+        glfwDestroyWindow(m_window);
 	}
 
 	GLFWwindow* Window::getGLFWwindow() {
@@ -263,36 +279,36 @@ namespace glui {
 		
 		handle->desc = pDesc;
 		handle->theme = theme;
-
-		Window* win = this;
-
-		handle->thread = new std::thread([handle, win]() -> void {
-			glfwMakeContextCurrent(handle->window);
-
+        
+        glfwSetWindowPos(handle->window,
+                         (m_width - handle->desc->width) / 2 + m_xpos,
+                         (m_height - handle->desc->height) / 2 + m_ypos);
+        
+        glfwShowWindow(handle->window);
+        
+        glfwSetKeyCallback(handle->window, keyCallback);
+        glfwSetMouseButtonCallback(handle->window, mouseButtonCallback);
+        glfwSetCursorPosCallback(handle->window, mousePosCallback);
+        glfwSetCharCallback(handle->window, textCallBack);
+        glfwSetScrollCallback(handle->window, mouseScrollCallback);
+        glfwSetWindowFocusCallback(handle->window, focusCallback);
+        
+        WindowUserPointer* userPointer = (WindowUserPointer*)malloc(sizeof(WindowUserPointer));
+        userPointer->window = NULL;
+        userPointer->windowID = 1;
+        
+        glfwSetWindowUserPointer(handle->window, userPointer);
+        
+        if (handle->desc->icon != NULL) {
+            glfwSetWindowIcon(handle->window, handle->desc->iconNum, handle->desc->icon);
+        }
+        
+        input::InputData::windowID = 1;
+        
+		handle->thread = new std::thread([handle]() -> void {
+            glfwMakeContextCurrent(handle->window);
+            
 			RendererGLData* renderData = Renderer::createRenderData(handle->desc->width, handle->desc->height);
-
-			glfwSetWindowPos(handle->window,
-				(win->getWidth() - handle->desc->width) / 2 + win->getX(),
-				(win->getHeight() - handle->desc->height) / 2 + win->getY());
-
-			glfwSetKeyCallback(handle->window, keyCallback);
-			glfwSetMouseButtonCallback(handle->window, mouseButtonCallback);
-			glfwSetCursorPosCallback(handle->window, mousePosCallback);
-			glfwSetCharCallback(handle->window, textCallBack);
-			glfwSetScrollCallback(handle->window, mouseScrollCallback);
-			glfwSetWindowFocusCallback(handle->window, focusCallback);
-
-			WindowUserPointer* userPointer = (WindowUserPointer*)malloc(sizeof(WindowUserPointer));
-			userPointer->window = NULL;
-			userPointer->windowID = 1;
-
-			glfwSetWindowUserPointer(handle->window, userPointer);
-
-			if (handle->desc->icon != NULL) {
-				glfwSetWindowIcon(handle->window, handle->desc->iconNum, handle->desc->icon);
-			}
-
-			glfwShowWindow(handle->window);
 
 			Renderer::setProjection(renderData, 0, handle->desc->width, 0, handle->desc->height, -1, 1);
 
@@ -320,6 +336,8 @@ namespace glui {
 					Rectangle rect = { (float)(10 + (sizex + 10)*i), 10, (float)(sizex), 50 };
 
 					Button* button = new Button(rect, layout, *handle->desc->btnText[i], bDesc, 1);
+                    
+                    button->setRenderData(renderData);
 
 					buttons.push_back(button);
 				}
@@ -337,10 +355,11 @@ namespace glui {
 						buttons[i]->poll();
 					}
 				}
-
+                
+                
 				Renderer::beginDraw(renderData);
-
-				Renderer::drawString(renderData, *handle->desc->text, 1, 10,
+                
+                Renderer::drawString(renderData, *handle->desc->text, 1, 10,
 					handle->desc->height - handle->desc->bodyTextStyle->font->size - 10, handle->desc->bodyTextStyle->size,
 					handle->desc->bodyTextStyle->font, handle->theme->popupText);
 
@@ -349,14 +368,13 @@ namespace glui {
 						buttons[i]->render();
 					}
 				}
-
+                
 				Renderer::endDraw();
 
 				glfwSwapBuffers(handle->window);
 			}
 
 			handle->closed = true;
-			glfwHideWindow(handle->window);
 
 			handle->desc->bodyTextStyle->font->del(1);
 			handle->desc->buttonTextStyle->font->del(1);

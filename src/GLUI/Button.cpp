@@ -37,6 +37,7 @@ namespace glui {
 	}
 
 	void Button::render() {
+        
 		Color c = m_desc.theme.body;
 
 		if (m_down) {
@@ -46,14 +47,15 @@ namespace glui {
 		}
 
 		if (m_desc.outThick > 0) {
-			Renderer::drawRect(m_bounds.x - m_desc.outThick, m_bounds.y - m_desc.outThick, 
+			Renderer::drawRect(m_renderData, m_bounds.x - m_desc.outThick, m_bounds.y - m_desc.outThick,
 				m_bounds.w + m_desc.outThick * 2, m_bounds.h + m_desc.outThick * 2, m_desc.theme.outline);
 		}
 
-		Renderer::drawRect(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, c);
+		Renderer::drawRect(m_renderData, m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, c);
 
 		float off = (m_bounds.h - m_desc.style.size)/2.0f;
 
-		Renderer::drawString(m_text, m_desc.style.fontID, m_bounds.x + off, m_bounds.y + off*1.5f, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
+		Renderer::drawString(m_renderData, m_text, m_desc.style.fontID, m_bounds.x + off, m_bounds.y + off*1.5f, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
+        
 	}
 }

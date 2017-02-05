@@ -113,6 +113,7 @@ namespace glui {
 		m_bounds = bounds;
 		m_layout = layout;
 		m_windowID = windowID;
+        m_renderData = Renderer::defaultRenderData;
 	}
 
 	void GLUIObject::setPos(Vector2f pos) {
@@ -130,6 +131,10 @@ namespace glui {
 			pollFunction();
 		}
 	}
+    
+    void GLUIObject::setRenderData(glui::RendererGLData* renderData) {
+        m_renderData = renderData;
+    }
 
 	void Utils::getModelviewMatrix(float* vals, float x, float y, float w, float h) {
 		vals[0] = w;
