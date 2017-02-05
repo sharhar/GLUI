@@ -15,6 +15,7 @@ namespace glui {
 			static int mousePosx;
 			static int mousePosy;
 			static bool mouseLeftDown;
+			static int windowID;
 			static std::function<void(void)>* textBoxEnterFunc;
 		};
 

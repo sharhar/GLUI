@@ -25,18 +25,27 @@ namespace glui {
 		static Color magenta       = { 1.00f, 0.00f, 1.00f };
 	}
 
-	class Font {
+	class FontFace {
 	private:
 		bool m_inited;
 		void* m_face;
 	public:
-		Font(std::string path, float a_size);
-
-		std::vector<void*> chars;
-		float size;
-		int current;
+		FontFace(std::string path);
 
 		bool inited();
+		void* getFace();
+	};
+
+	class Font {
+	private:
+		FontFace* m_face;
+	public:
+		Font(FontFace* face, int fontSize);
+
+		std::vector<void*> chars;
+		int size;
+		int current;
+		
 		void loadGL(int num);
 		void del(int num);
 	};
@@ -52,6 +61,7 @@ namespace glui {
 	typedef struct TextStyle {
 		float size;
 		Font* font;
+		int fontID;
 	} TextStyle;
 
 	typedef struct Theme {

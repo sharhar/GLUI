@@ -30,8 +30,8 @@ namespace glui {
 		GLPanelMouseData* m_mouseData;
 		Vector2f m_fboSize;
 	public:
-		GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme);
-		void poll() override;
+		GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme, int windowID);
+		void pollFunction() override;
 		void render() override;
 		void renderDepth();
 		unsigned int getFBO() { return m_FBO; }

@@ -2,6 +2,8 @@
 
 #include <GLUI/Utils.h>
 #include <functional>
+#include <thread>
+#include <vector>
 
 struct GLFWwindow;
 struct GLFWimage;
@@ -16,7 +18,27 @@ namespace glui{
 		std::function<void(float)> mouseScroll;
 	} WindowCallbacks;
 
-    struct PopupDescriptor;
+	typedef struct PopupDescriptor {
+		int width;
+		int height;
+		std::string* title;
+		std::string* text;
+		int btnNum;
+		std::string** btnText;
+		TextStyle* bodyTextStyle;
+		TextStyle* buttonTextStyle;
+		GLFWimage* icon;
+		int iconNum;
+	} PopupDescriptor;
+
+	typedef struct PopupHandle {
+		std::thread* thread;
+		GLFWwindow* window;
+		bool closed;
+		int result;
+		PopupDescriptor* desc;
+		Theme* theme;
+	} PopupHandle;
 
 	class Window {
 	private:
@@ -26,6 +48,7 @@ namespace glui{
 		int m_xpos;
 		int m_ypos;
 		int m_focused;
+		std::vector<PopupHandle*> m_popups;
 	public:
 		Window(const char* title, int width, int height, bool resizeable, int iconNum, GLFWimage* icon);
 		Window(GLFWwindow* glfwWin);
@@ -38,25 +61,11 @@ namespace glui{
 		void swap();
 		void destroy();
 		WindowCallbacks getCallbacks();
-		static int popup(PopupDescriptor desc, Theme theme);
+		PopupHandle* popup(PopupDescriptor desc, Theme* theme);
 
 		GLFWwindow* getGLFWwindow();
 
 		friend void focusCallback(GLFWwindow* window, int focused);
 		friend void posCallback(GLFWwindow* window, int xpos, int ypos);
 	};
-
-	typedef struct PopupDescriptor {
-		int width;
-		int height;
-		const char* title;
-		const char* text;
-		int btnNum;
-		const char** btnText;
-		Window* window;
-		TextStyle bodyTextStyle;
-		TextStyle buttonTextStyle;
-		GLFWimage* icon;
-		int iconNum;
-	} PopupDescriptor;
 }

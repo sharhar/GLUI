@@ -9,6 +9,7 @@ namespace glui {
 		int InputData::mousePosy = -1;
 		float InputData::scrollTotal = 0;
 		bool InputData::mouseLeftDown = false;
+		int InputData::windowID = 0;
 		unsigned char* InputData::keys = new unsigned char[GLFW_KEY_LAST];
 		std::function<void(void)>* InputData::textBoxEnterFunc = NULL;
 

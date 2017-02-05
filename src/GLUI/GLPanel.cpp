@@ -3,8 +3,9 @@
 
 namespace glui {
 
-	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> renderFunc, std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme) :
-		GLUIObject(bounds,layout){
+	GLPanel::GLPanel(Rectangle bounds, Vector2f fboSize, Layout* layout, std::function<void(void)> renderFunc, 
+		std::function<void(GLPanelMouseData* data)> inputMouseFunc, Theme theme, int windowID) :
+		GLUIObject(bounds, layout, windowID){
 		m_renderFunc = renderFunc;
 		m_inputMouseFunc = inputMouseFunc;
 		m_fboSize = fboSize;
@@ -52,7 +53,7 @@ namespace glui {
 		m_dtex = dtex;
 	}
 
-	void GLPanel::poll() {
+	void GLPanel::pollFunction() {
 		if (m_inputMouseFunc != NULL) {
 			float posx = input::InputData::mousePosx * m_layout->getScaleX();
 			float posy = input::InputData::mousePosy * m_layout->getScaleY();

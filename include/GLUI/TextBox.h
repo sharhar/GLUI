@@ -33,12 +33,12 @@ namespace glui {
 	public:
 		std::string m_text;
 	
-		TextBox(Rectangle bounds, Layout* layout, TextBoxDescriptor desc);
+		TextBox(Rectangle bounds, Layout* layout, TextBoxDescriptor desc, int windowID);
 		~TextBox();
 
 		void setEnterFunc(std::function<void(void)> enterFunc);
 
-		void poll() override;
+		void pollFunction() override;
 		void render() override;
 		void clearText();
 	};

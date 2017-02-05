@@ -2,15 +2,15 @@
 #include <GLUIExt.h>
 
 namespace glui {
-	CheckBox::CheckBox(Rectangle bounds, Layout* layout, std::string text, CheckBoxDescriptor desc)  :
-		GLUIObject(bounds,layout){
+	CheckBox::CheckBox(Rectangle bounds, Layout* layout, std::string text, CheckBoxDescriptor desc, int windowID)  :
+		GLUIObject(bounds,layout, windowID){
 		m_text = text;
 		m_desc = desc;
 		m_checked = desc.checkedAtStart;
 		m_prevDown = false;
 	}
 
-	void CheckBox::poll() {
+	void CheckBox::pollFunction() {
 		float posx = input::InputData::mousePosx * m_layout->getScaleX();
 		float posy = input::InputData::mousePosy * m_layout->getScaleY();
 

@@ -22,8 +22,8 @@ namespace glui {
 		bool m_checked;
 		bool m_prevDown;
 	public:
-		CheckBox(Rectangle bounds, Layout* layout, std::string text, CheckBoxDescriptor desc);
-		void poll() override;
+		CheckBox(Rectangle bounds, Layout* layout, std::string text, CheckBoxDescriptor desc, int windowID);
+		void pollFunction() override;
 		void render() override;
 		bool checked() { return m_checked; }
 	};

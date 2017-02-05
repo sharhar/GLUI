@@ -5,7 +5,6 @@ namespace glui {
 	int Renderer::m_width = 0;
 	int Renderer::m_height = 0;
 	RendererGLData* Renderer::defaultRenderData = 0;
-	RendererGLData* Renderer::currentRenderData = 0;
 
 	void Renderer::init(Window* window) {
 		m_width = window->getWidth();
@@ -14,7 +13,6 @@ namespace glui {
 		reinit();
 
 		defaultRenderData = createRenderData(m_width, m_height);
-		setRenderData(defaultRenderData);
 	}
 
 	RendererGLData* Renderer::createRenderData(int width, int height) {
@@ -221,23 +219,29 @@ namespace glui {
 	}
 
 	void Renderer::beginDraw() {
-		glBindVertexArray(currentRenderData->quadVAO);
+		beginDraw(defaultRenderData);
+	}
+
+	void Renderer::beginDraw(RendererGLData* renderData) {
+		glBindVertexArray(renderData->quadVAO);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
-		glUseProgram(currentRenderData->shaderProgram);
+		glUseProgram(renderData->shaderProgram);
 	}
 
 	void Renderer::setUniforms(int mode, float* modelview) {
-		glUniform1i(currentRenderData->modeLoc, mode);
-		glUniform3f(currentRenderData->colorLoc, 0, 0, 0);
-		glUniformMatrix4fv(currentRenderData->modelviewLoc, 1, false, modelview);
+		setUniforms(defaultRenderData, mode, modelview, glui::color::black);
 	}
 
 	void Renderer::setUniforms(int mode, float* modelview, glui::Color color) {
-		glUniform1i(currentRenderData->modeLoc, mode);
-		glUniform3f(currentRenderData->colorLoc, color.r, color.g, color.b);
-		glUniformMatrix4fv(currentRenderData->modelviewLoc, 1, false, modelview);
+		setUniforms(defaultRenderData, mode, modelview, color);
+	}
+
+	void Renderer::setUniforms(RendererGLData* renderData, int mode, float* modelview, glui::Color color) {
+		glUniform1i(renderData->modeLoc, mode);
+		glUniform3f(renderData->colorLoc, color.r, color.g, color.b);
+		glUniformMatrix4fv(renderData->modelviewLoc, 1, false, modelview);
 	}
 
 	void Renderer::endDraw() {
@@ -248,27 +252,112 @@ namespace glui {
 		glBindVertexArray(0);
 	}
 
-	void Renderer::setRenderData(RendererGLData* renderData) {
-		currentRenderData = renderData;
-	}
-	
-	void Renderer::resetRenderData() {
-		setRenderData(defaultRenderData);
+	void Renderer::drawString(std::string text, float posx, float posy, float scale, Font* font, Color color) {
+		drawString(defaultRenderData, text, font->current, posx, posy, scale, font, color);
 	}
 
-	void Renderer::drawString(const std::string& text, float posx, float posy, float scale, Font* font, Color color) {
-		drawString(text, font->current, posx, posy, scale, font, color);
+	void Renderer::drawString(std::string text, int num, float posx, float posy, float scale, Font* font, Color color) {
+		drawString(defaultRenderData, text, num, posx, posy, scale, font, color);
 	}
 
-	void Renderer::drawString(const std::string& text, int num, float posx, float posy, float scale, Font* font, Color color) {
+	void Renderer::drawString(RendererGLData* renderData, std::string text, int num, float posx, float posy, float scale, Font* font, Color color) {
 		Character** chars = (Character**)font->chars[num];
 
 		float xOff = 0;
 		float yOff = 0;
 
-		float s = scale/font->size;
+		float s = scale / font->size;
 
-		for (unsigned int i = 0; i < text.size();i++) {
+		for (unsigned int i = 0; i < text.size(); i++) {
+			char c = text.at(i);
+
+			if (c == '\n') {
+				yOff += scale;
+				xOff = 0;
+				continue;
+			}
+
+			Character* car = chars[(unsigned int)c];
+
+			GLuint tex = car->tex;
+
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glActiveTexture(GL_TEXTURE0);
+
+			float h = car->sizey * s;
+			float w = car->sizex * s;
+
+			float x = xOff + posx + car->offx * s;
+			float y = posy - (car->sizey - car->offy) * s - yOff;
+
+			Utils::getModelviewMatrix(renderData->modelview, x + w / 2, y + h / 2, w, h);
+			Renderer::setUniforms(1, renderData->modelview, color);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			xOff += (car->advance >> 6) * s;
+		}
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void Renderer::drawRect(float x, float y, float w, float h, Color color) {
+		drawRect(defaultRenderData, x, y, w, h, color);
+	}
+
+	void Renderer::drawRect(RendererGLData* renderData, float x, float y, float w, float h, Color color) {
+		Utils::getModelviewMatrix(renderData->modelview, x + w / 2, y + h / 2, w, h);
+		Renderer::setUniforms(0, renderData->modelview, color);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+    
+	void Renderer::drawRect(float x, float y, float w, float h, GLuint tex) {
+		drawRect(defaultRenderData, x, y, w, h, tex);
+	}
+
+    void Renderer::drawRect(RendererGLData* renderData, float x, float y, float w, float h, GLuint tex) {
+        glBindTexture(GL_TEXTURE_2D, tex);
+        glActiveTexture(GL_TEXTURE0);
+        
+        Utils::getModelviewMatrix(renderData->modelview, x + w / 2, y + h / 2, w, h);
+        Renderer::setUniforms(2, renderData->modelview);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    
+    void Renderer::drawRect(float x, float y, float w, float h, float r, Color color) {
+		drawRect(defaultRenderData, x, y, w, h, r, color);
+    }
+
+	void Renderer::drawRect(RendererGLData* renderData, float x, float y, float w, float h, float r, Color color) {
+		Utils::getModelviewMatrix(renderData->modelview, x, y, w, h, r);
+		Renderer::setUniforms(0, renderData->modelview, color);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+    
+    void Renderer::setProjection(float left, float right, float bottom, float top, float near, float far) {
+		setProjection(defaultRenderData, left, right, bottom, top, near, far);
+    }
+
+	void Renderer::setProjection(RendererGLData* renderData, float left, float right, float bottom, float top, float near, float far) {
+		Utils::getOrthoMatrix(renderData->projection, left, right, bottom, top, near, far);
+
+		glUseProgram(renderData->shaderProgram);
+		glUniformMatrix4fv(renderData->projectionLoc, 1, false, renderData->projection);
+		glUseProgram(0);
+	}
+    
+    void Renderer::drawStringCustom(std::string text, GLuint modelviewLoc, float posx, float posy, float scale, Font* font, Color color) {
+		drawStringCustom(defaultRenderData, text, modelviewLoc, posx, posy, scale, font, color);
+    }
+
+	void Renderer::drawStringCustom(RendererGLData* renderData, std::string text, GLuint modelviewLoc, float posx, float posy, float scale, Font* font, Color color) {
+		Character** chars = (Character**)font->chars[font->current];
+
+		float xOff = 0;
+		float yOff = 0;
+
+		float s = scale / font->size;
+
+		for (unsigned int i = 0; i < text.size(); i++) {
 			char c = text.at(i);
 
 			if (c == '\n') {
@@ -280,18 +369,18 @@ namespace glui {
 			Character* car = chars[(int)c];
 
 			GLuint tex = car->tex;
-			
+
 			glBindTexture(GL_TEXTURE_2D, tex);
 			glActiveTexture(GL_TEXTURE0);
 
 			float h = car->sizey * s;
 			float w = car->sizex * s;
-			
+
 			float x = xOff + posx + car->offx * s;
 			float y = posy - (car->sizey - car->offy) * s - yOff;
 
-			Utils::getModelviewMatrix(currentRenderData->modelview, x + w/2, y + h/2, w, h);
-			Renderer::setUniforms(1, currentRenderData->modelview, color);
+			Utils::getModelviewMatrix(renderData->modelview, x + w / 2, y + h / 2, w, h);
+			glUniformMatrix4fv(modelviewLoc, 1, false, renderData->modelview);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 			xOff += (car->advance >> 6) * s;
@@ -299,74 +388,4 @@ namespace glui {
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	void Renderer::drawRect(float x, float y, float w, float h, Color color) {
-		Utils::getModelviewMatrix(currentRenderData->modelview, x + w / 2, y + h / 2, w, h);
-		Renderer::setUniforms(0, currentRenderData->modelview, color);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-	}
-    
-    void Renderer::drawRect(float x, float y, float w, float h, GLuint tex) {
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glActiveTexture(GL_TEXTURE0);
-        
-        Utils::getModelviewMatrix(currentRenderData->modelview, x + w / 2, y + h / 2, w, h);
-        Renderer::setUniforms(2, currentRenderData->modelview);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-    
-    void Renderer::drawRect(float x, float y, float w, float h, float r, Color color) {
-        Utils::getModelviewMatrix(currentRenderData->modelview, x, y, w, h, r);
-        Renderer::setUniforms(0, currentRenderData->modelview, color);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-    
-    void Renderer::setProjection(float left, float right, float bottom, float top, float near, float far) {
-        Utils::getOrthoMatrix(currentRenderData->projection, left, right, bottom, top, near, far);
-        
-        glUseProgram(currentRenderData->shaderProgram);
-        glUniformMatrix4fv(currentRenderData->projectionLoc, 1, false, currentRenderData->projection);
-        glUseProgram(0);
-    }
-    
-    void Renderer::drawStringCustom(const std::string& text, GLuint modelviewLoc, float posx, float posy, float scale, Font* font, Color color) {
-        Character** chars = (Character**)font->chars[font->current];
-        
-        float xOff = 0;
-        float yOff = 0;
-        
-        float s = scale/font->size;
-        
-        for (unsigned int i = 0; i < text.size();i++) {
-            char c = text.at(i);
-            
-            if (c == '\n') {
-                yOff += scale;
-                xOff = 0;
-                continue;
-            }
-            
-            Character* car = chars[(int)c];
-            
-            GLuint tex = car->tex;
-            
-            glBindTexture(GL_TEXTURE_2D, tex);
-            glActiveTexture(GL_TEXTURE0);
-            
-            float h = car->sizey * s;
-            float w = car->sizex * s;
-            
-            float x = xOff + posx + car->offx * s;
-            float y = posy - (car->sizey - car->offy) * s - yOff;
-            
-            Utils::getModelviewMatrix(currentRenderData->modelview, x + w/2, y + h/2, w, h);
-            glUniformMatrix4fv(modelviewLoc, 1, false, currentRenderData->modelview);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            
-            xOff += (car->advance >> 6) * s;
-        }
-        
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-    }
 }

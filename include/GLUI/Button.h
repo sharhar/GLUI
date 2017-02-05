@@ -21,9 +21,9 @@ namespace glui {
 		bool m_down;
 		bool m_hovering;
 	public:
-		Button(Rectangle bounds, Layout* layout, std::string text, ButtonDescriptor desc);
+		Button(Rectangle bounds, Layout* layout, std::string text, ButtonDescriptor desc, int windowID);
 
-		void poll() override;
+		void pollFunction() override;
 		void render() override;
 	};
 }

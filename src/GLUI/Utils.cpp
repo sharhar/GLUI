@@ -6,7 +6,7 @@
 
 namespace glui {
 
-	Font::Font(std::string path, float a_size) {
+	FontFace::FontFace(std::string path) {
 		GLUIData* data = (GLUIData*)GLUI::data;
 
 		FT_Face face;
@@ -17,16 +17,24 @@ namespace glui {
 			return;
 		}
 
-		size = a_size;
-
-		FT_Set_Pixel_Sizes(face, 0, (int)size);
-
 		m_face = face;
 
+		m_inited = true;
+	}
+
+	bool FontFace::inited() {
+		return m_inited;
+	}
+
+	void* FontFace::getFace() {
+		return m_face;
+	}
+
+	Font::Font(FontFace* face, int fontSize) {
+		m_face = face;
+		size = fontSize;
 		loadGL(0);
 		current = 0;
-
-		m_inited = true;
 	}
 
 	void Font::loadGL(int num) {
@@ -34,7 +42,9 @@ namespace glui {
 			del(num);
 		}
 
-		FT_Face face = (FT_Face)m_face;
+		FT_Face face = (FT_Face)m_face->getFace();
+
+		FT_Set_Pixel_Sizes(face, 0, size);
 
 		Character** t_chars = new Character*[127];
 
@@ -95,15 +105,14 @@ namespace glui {
 		}
 
 		free(t_chars);
+
+		chars.pop_back();
 	}
 
-	bool Font::inited() {
-		return m_inited;
-	}
-
-	GLUIObject::GLUIObject(Rectangle bounds, Layout* layout) {
+	GLUIObject::GLUIObject(Rectangle bounds, Layout* layout, int windowID) {
 		m_bounds = bounds;
 		m_layout = layout;
+		m_windowID = windowID;
 	}
 
 	void GLUIObject::setPos(Vector2f pos) {
@@ -114,6 +123,12 @@ namespace glui {
 	void GLUIObject::setSize(Vector2f size) {
 		m_bounds.w = size.x;
 		m_bounds.h = size.y;
+	}
+
+	void GLUIObject::poll() {
+		if (input::InputData::windowID == m_windowID) {
+			pollFunction();
+		}
 	}
 
 	void Utils::getModelviewMatrix(float* vals, float x, float y, float w, float h) {
@@ -162,7 +177,6 @@ namespace glui {
         vals[14] = 0;
         vals[15] = 1;
     }
-
 
 	void Utils::getOrthoMatrix(float* vals, float left, float right, float bottom, float top, float near, float far) {
 		vals[0] = 2.0f / (right - left);

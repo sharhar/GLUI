@@ -2,8 +2,8 @@
 #include <GLUIExt.h>
 
 namespace glui {
-	TextBox::TextBox(Rectangle bounds, Layout* layout, TextBoxDescriptor desc) : 
-		GLUIObject(bounds, layout) {
+	TextBox::TextBox(Rectangle bounds, Layout* layout, TextBoxDescriptor desc, int windowID) : 
+		GLUIObject(bounds, layout, windowID) {
 		m_desc = desc;
 		m_text = "";
 		m_prevDown = false;
@@ -36,7 +36,7 @@ namespace glui {
 		m_enterFunc = enterFunc;
 	}
 
-	void TextBox::poll() {
+	void TextBox::pollFunction() {
 		float posx = input::InputData::mousePosx * m_layout->getScaleX();
 		float posy = input::InputData::mousePosy * m_layout->getScaleY();
 

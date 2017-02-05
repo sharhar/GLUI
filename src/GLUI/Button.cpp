@@ -2,8 +2,8 @@
 #include <GLUIExt.h>
 
 namespace glui {
-	Button::Button(Rectangle bounds, Layout* layout, std::string text, ButtonDescriptor desc) :
-		GLUIObject(bounds, layout) {
+	Button::Button(Rectangle bounds, Layout* layout, std::string text, ButtonDescriptor desc, int windowID) :
+		GLUIObject(bounds, layout, windowID) {
 		m_prevDown = false;
 		m_down = false;
 		m_hovering = false;
@@ -11,7 +11,7 @@ namespace glui {
 		m_desc = desc;
 	}
 
-	void Button::poll() {
+	void Button::pollFunction() {
 		float posx = input::InputData::mousePosx * m_layout->getScaleX();
 		float posy = input::InputData::mousePosy * m_layout->getScaleY();
 
@@ -54,6 +54,6 @@ namespace glui {
 
 		float off = (m_bounds.h - m_desc.style.size)/2.0f;
 
-		Renderer::drawString(m_text, m_bounds.x + off, m_bounds.y + off*1.5f, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
+		Renderer::drawString(m_text, m_desc.style.fontID, m_bounds.x + off, m_bounds.y + off*1.5f, m_desc.style.size, m_desc.style.font, m_desc.theme.text);
 	}
 }
